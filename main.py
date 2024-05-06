@@ -6,6 +6,18 @@ import argparse
 import validators
 
 
+def download_image(img_url, directory):
+    img_name = os.path.basename(img_url)
+    abs_path = os.path.join(directory, img_name)
+    with open(abs_path, 'wb') as file:
+        file.write(requests.get(img_url).content)
+
+
+def download_images(images_url, directory):
+    for img_url in images_url:
+        download_image(img_url=img_url, directory=directory)
+
+
 def parse_images(url):
     images_url = []
     html_content = requests.get(url).text
@@ -18,17 +30,6 @@ def parse_images(url):
             img_url = urljoin(base_url, img_url)
         images_url.append(img_url)
     return images_url
-
-
-def download_images(images_url, directory):
-    try:
-        for img_url in images_url:
-            img_name = os.path.basename(img_url)
-            abs_path = os.path.join(directory, img_name)
-            with open(abs_path, 'wb') as file:
-                file.write(requests.get(img_url).content)
-    except Exception as e:
-        print(f"An error occurred: {e}")
 
 
 def main():
@@ -52,7 +53,7 @@ def main():
         os.makedirs(directory)
 
     images_url = parse_images(url)
-    download_images(images_url, directory)
+    download_images(images_url=images_url, directory=directory)
 
 
 if __name__ == "__main__":
