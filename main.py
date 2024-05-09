@@ -5,38 +5,8 @@ import os
 from urllib.parse import urlparse, urljoin
 import argparse
 import validators
-
-
-class Parser(ABC):
-    @abstractmethod
-    def parse(self, url: str):
-        pass
-
-
-class ImgParser(Parser):
-    def __init__(self):
-        self.image_urls = []
-
-    def parse(self, url: str):
-        html_content = requests.get(url).text
-        soup = BeautifulSoup(html_content, 'lxml')
-        img_tags = soup.find_all('img')
-        for img in img_tags:
-            img_url = img.get('src')
-            if not img_url.startswith(('http://', 'https://')):
-                base_url = '{uri.scheme}://{uri.netloc}'.format(uri=urlparse(url))
-                img_url = urljoin(base_url, img_url)
-            self.image_urls.append(img_url)
-
-    def download_image(self, img_url: str, directory: str):
-        img_name = os.path.basename(img_url)
-        abs_path = os.path.join(directory, img_name)
-        with open(abs_path, 'wb') as file:
-            file.write(requests.get(img_url).content)
-
-    def save_images(self, directory: str):
-        for img_url in self.image_urls:
-            self.download_image(img_url=img_url, directory=directory)
+from parsers.parser_abc import Parser
+from parsers.image_parser import ImgParser
 
 
 def main():
@@ -59,9 +29,8 @@ def main():
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    img_parser = ImgParser()
-    img_parser.parse(url=url)
-    img_parser.save_images(directory=directory)
+    img_parser = ImgParser(url=url, directory=directory)
+    img_parser.parse()
     print("Images downloaded successfully.")
 
 
