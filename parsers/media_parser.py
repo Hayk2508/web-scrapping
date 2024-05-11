@@ -12,16 +12,15 @@ class MediaParser(Parser, ABC):
         super().__init__(url=url)
         self.directory = directory
 
-    def download(self, url):
-        video_name = os.path.basename(url)
+    def download(self, media_url: str):
+        media_name = os.path.basename(media_url)
         abs_path = os.path.join(self.directory, video_name)
         with open(abs_path, 'wb') as file:
-            file.write(requests.get(url).content)
+            file.write(requests.get(media_url).content)
 
-    def process_url(self, url):
+    def process_url(self, media_url: str):
         base_url = '{uri.scheme}://{uri.netloc}'.format(uri=urlparse(self.url))
-        url = urljoin(base_url, url)
-        return url
+        return urljoin(base_url, media_url)
 
     def fetch(self, tag: str):
         html_content = requests.get(self.url).content
