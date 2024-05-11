@@ -1,11 +1,6 @@
-from abc import ABC, abstractmethod
-import requests
-from bs4 import BeautifulSoup
 import os
-from urllib.parse import urlparse, urljoin
 import argparse
 import validators
-from parsers.parser_abc import Parser
 from parsers.image_parser import ImgParser
 from parsers.video_parser import VideoParser
 
