@@ -20,8 +20,7 @@ class MediaParser(Parser, ABC):
 
     def process_url(self, url):
         base_url = '{uri.scheme}://{uri.netloc}'.format(uri=urlparse(self.url))
-        url = urljoin(base_url, url)
-        return url
+        return urljoin(base_url, media_url)
 
     def fetch(self, tag: str):
         html_content = requests.get(self.url).content
