@@ -12,7 +12,7 @@ class MediaParser(Parser, ABC):
         super().__init__(url=url)
         self.directory = directory
 
-    def download(self, url):
+    def download(self, media_url: str):
         video_name = os.path.basename(url)
         abs_path = os.path.join(self.directory, video_name)
         with open(abs_path, 'wb') as file:
