@@ -2,6 +2,7 @@ import os
 from abc import ABC
 from urllib.parse import urljoin, urlparse
 import requests
+from bs4 import BeautifulSoup
 from .parser_abc import Parser
 
 
@@ -21,3 +22,9 @@ class MediaParser(Parser, ABC):
         base_url = '{uri.scheme}://{uri.netloc}'.format(uri=urlparse(self.url))
         url = urljoin(base_url, url)
         return url
+
+    def fetch(self, tag: str):
+        html_content = requests.get(self.url).content
+        soup = BeautifulSoup(html_content, 'lxml')
+        tags = soup.find_all(tag)
+        return tags

@@ -1,6 +1,4 @@
 from .media_parser import MediaParser
-from bs4 import BeautifulSoup
-import requests
 
 
 class VideoParser(MediaParser):
@@ -9,12 +7,10 @@ class VideoParser(MediaParser):
         self.max_videos = max_videos
 
     def parse(self):
-        html_content = requests.get(self.url).content
-        soup = BeautifulSoup(html_content, 'lxml')
-        videos = soup.find_all('video')
-        if len(videos) > self.max_videos:
-            videos = videos[:self.max_videos]
-        for video in videos:
+        video_tags = self.fetch(tag='video')
+        if len(video_tags) > self.max_videos:
+            video_tags = video_tags[:self.max_videos]
+        for video in video_tags:
             video_url = video.find("a")['href']
             if not video_url.startswith(('http://', 'https://')):
                 video_url = self.process_url(url=video_url)
