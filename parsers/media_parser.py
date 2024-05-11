@@ -16,7 +16,7 @@ class MediaParser(Parser, ABC):
         video_name = os.path.basename(url)
         abs_path = os.path.join(self.directory, video_name)
         with open(abs_path, 'wb') as file:
-            file.write(requests.get(url).content)
+            file.write(requests.get(media_url).content)
 
     def process_url(self, url):
         base_url = '{uri.scheme}://{uri.netloc}'.format(uri=urlparse(self.url))
