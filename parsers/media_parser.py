@@ -14,7 +14,7 @@ class MediaParser(Parser, ABC):
 
     def download(self, media_url: str):
         media_name = os.path.basename(media_url)
-        abs_path = os.path.join(self.directory, video_name)
+        abs_path = os.path.join(self.directory, media_name)
         with open(abs_path, 'wb') as file:
             file.write(requests.get(media_url).content)
 
@@ -25,5 +25,4 @@ class MediaParser(Parser, ABC):
     def fetch(self, tag: str):
         html_content = requests.get(self.url).content
         soup = BeautifulSoup(html_content, 'lxml')
-        tags = soup.find_all(tag)
-        return tags
+        return soup.find_all(tag)

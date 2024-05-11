@@ -13,8 +13,8 @@ class VideoParser(MediaParser):
         for video in video_tags:
             video_url = video.find("a")['href']
             if not video_url.startswith(('http://', 'https://')):
-                video_url = self.process_url(url=video_url)
-            self.download(url=video_url)
+                video_url = self.process_url(media_url=video_url)
+            self.download(media_url=video_url)
 
 
 

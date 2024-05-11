@@ -10,5 +10,5 @@ class ImgParser(MediaParser):
         for img in img_tags:
             img_url = img.get('src')
             if not img_url.startswith(('http://', 'https://')):
-                img_url = self.process_url(url=img_url)
-            self.download(url=img_url)
+                img_url = self.process_url(media_url=img_url)
+            self.download(media_url=img_url)
