@@ -18,7 +18,7 @@ class MediaParser(Parser, ABC):
         with open(abs_path, 'wb') as file:
             file.write(requests.get(media_url).content)
 
-    def process_url(self, url):
+    def process_url(self, media_url: str):
         base_url = '{uri.scheme}://{uri.netloc}'.format(uri=urlparse(self.url))
         return urljoin(base_url, media_url)
 
