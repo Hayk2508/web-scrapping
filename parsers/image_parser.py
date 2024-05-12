@@ -12,3 +12,10 @@ class ImgParser(MediaParser):
             if not img_url.startswith(('http://', 'https://')):
                 img_url = self.process_url(media_url=img_url)
             self.download(media_url=img_url)
+
+
+class ImgParserBuilder:
+
+    def __call__(self, url: str, directory: str, **_ignored):
+        return ImgParser(url=url, directory=directory)
+
