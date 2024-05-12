@@ -2,7 +2,7 @@ from .media_parser import MediaParser
 
 
 class VideoParser(MediaParser):
-    def __init__(self, url: str, directory: str, max_videos):
+    def __init__(self, url: str, directory: str, max_videos: int):
         super().__init__(url=url, directory=directory)
         self.max_videos = max_videos
 
@@ -17,7 +17,9 @@ class VideoParser(MediaParser):
             self.download(media_url=video_url)
 
 
-
+class VideoParserBuilder:
+    def __call__(self, url: str, directory: str, max_videos: int):
+        return VideoParser(url=url, directory=directory, max_videos=max_videos)
 
 
 
