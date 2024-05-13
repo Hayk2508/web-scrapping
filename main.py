@@ -2,6 +2,8 @@ import os
 import argparse
 import validators
 from parsers.object_factory import factory
+from parsers.image_parser import ImgParserBuilder
+from parsers.video_parser import VideoParserBuilder
 
 
 def main():
