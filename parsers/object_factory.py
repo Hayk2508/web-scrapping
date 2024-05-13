@@ -1,3 +1,5 @@
+from .image_parser import ImgParserBuilder
+from .video_parser import VideoParserBuilder
 
 
 class ObjectFactory:
@@ -12,6 +14,13 @@ class ObjectFactory:
         if not builder:
             raise ValueError(key)
         return builder(**kwargs)
+
+
+def initialize_factory():
+    factory = ObjectFactory()
+    factory.register_builder('images', ImgParserBuilder())
+    factory.register_builder('videos', VideoParserBuilder())
+    return factory
 
 
 

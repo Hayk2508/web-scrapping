@@ -1,7 +1,7 @@
 import os
 import argparse
 import validators
-from parsers.factory_initializer import initialize_factory
+from parsers.object_factory import initialize_factory
 
 
 def main():
