@@ -1,7 +1,7 @@
 import os
 import argparse
 import validators
-from parsers.object_factory import initialize_factory
+from parsers.object_factory import factory
 
 
 def main():
@@ -29,8 +29,6 @@ def main():
 
     if not os.path.exists(args.directory):
         os.makedirs(args.directory)
-
-    factory = initialize_factory()
 
     parser = factory.create(args.parse_type, **parsed_args)
     parser.parse()
