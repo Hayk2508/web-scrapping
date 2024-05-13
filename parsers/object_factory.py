@@ -1,7 +1,3 @@
-from .image_parser import ImgParserBuilder
-from .video_parser import VideoParserBuilder
-
-
 class ObjectFactory:
     def __init__(self):
         self.builders = {}
@@ -10,17 +6,29 @@ class ObjectFactory:
         self.builders[key] = builder
 
     def create(self, key, **kwargs):
-        builder = self.builders.get(key)
+        print(factory.builders)
+        builder = factory.builders.get(key)
         if not builder:
-            raise ValueError(key)
+            raise ValueError(f"No builder registered for key: {key}")
         return builder(**kwargs)
 
 
+
 def initialize_factory():
-    factory = ObjectFactory()
-    factory.register_builder('images', ImgParserBuilder())
-    factory.register_builder('videos', VideoParserBuilder())
-    return factory
+    return ObjectFactory()
+
+
+factory = initialize_factory()
+
+
+def register_builder_decorator(key):
+    def decorator(cls):
+        factory.register_builder(key, cls())
+        return cls
+    return decorator
+
+
+
 
 
 
