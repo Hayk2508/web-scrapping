@@ -1,4 +1,5 @@
 from .media_parser import MediaParser
+from .object_factory import register_builder_decorator
 
 
 class ImgParser(MediaParser):
@@ -14,8 +15,7 @@ class ImgParser(MediaParser):
             self.download(media_url=img_url)
 
 
+@register_builder_decorator('images')
 class ImgParserBuilder:
-
     def __call__(self, url: str, directory: str, **_ignored):
         return ImgParser(url=url, directory=directory)
-
