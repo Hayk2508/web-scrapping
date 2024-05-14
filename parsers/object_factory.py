@@ -6,7 +6,6 @@ class ObjectFactory:
         self.builders[key] = builder
 
     def create(self, key, **kwargs):
-        print(factory.builders)
         builder = factory.builders.get(key)
         if not builder:
             raise ValueError(f"No builder registered for key: {key}")
@@ -20,7 +19,7 @@ def initialize_factory():
 factory = initialize_factory()
 
 
-def register_builder_decorator(key):
+def register_builder(key):
     def decorator(cls):
         factory.register_builder(key, cls())
         return cls

@@ -1,5 +1,5 @@
 from .media_parser import MediaParser
-from .object_factory import register_builder_decorator
+from .object_factory import register_builder
 
 
 class VideoParser(MediaParser):
@@ -19,7 +19,7 @@ class VideoParser(MediaParser):
             self.download(media_url=video_url)
 
 
-@register_builder_decorator("videos")
+@register_builder("videos")
 class VideoParserBuilder:
     def __call__(self, url: str, directory: str, max_videos: int):
         return VideoParser(url=url, directory=directory, max_videos=max_videos)
