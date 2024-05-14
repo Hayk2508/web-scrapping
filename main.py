@@ -1,7 +1,7 @@
 import os
 import argparse
 import validators
-from parsers.object_factory import factory
+from parsers import FACTORY
 from parsers.image_parser import ImgParserBuilder
 from parsers.video_parser import VideoParserBuilder
 
@@ -45,7 +45,7 @@ def main():
     if not os.path.exists(args.directory):
         os.makedirs(args.directory)
 
-    parser = factory.create(args.parse_type, **parsed_args)
+    parser = FACTORY.create(args.parse_type, **parsed_args)
     parser.parse()
     print(f"{args.parse_type.upper()} downloaded successfully")
 
