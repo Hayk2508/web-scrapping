@@ -1,4 +1,5 @@
 from parsers.object_factory import ObjectFactory
+
 FACTORY = ObjectFactory()
 
 
