@@ -13,7 +13,6 @@ class ObjectFactory:
         return builder(**kwargs)
 
 
-
 def initialize_factory():
     return ObjectFactory()
 
@@ -25,10 +24,5 @@ def register_builder_decorator(key):
     def decorator(cls):
         factory.register_builder(key, cls())
         return cls
+
     return decorator
-
-
-
-
-
-

@@ -7,18 +7,31 @@ from parsers.video_parser import VideoParserBuilder
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Download images/videos from a webpage.')
-    parser.add_argument('-url', '--url', type=str, help='URL of the webpage containing images/videos')
-    parser.add_argument('-d', '--directory', type=str, help='Directory to save downloaded images/videos')
-    parser.add_argument('-l', '--limit', type=int, help='Set Limit to downloading videos')
-    parser.add_argument('-pt', '--parse_type', type=str, choices=['images', 'videos'], help='Type of content to parse ('
-                                                                                            'images or videos)')
+    parser = argparse.ArgumentParser(
+        description="Download images/videos from a webpage."
+    )
+    parser.add_argument(
+        "-url", "--url", type=str, help="URL of the webpage containing images/videos"
+    )
+    parser.add_argument(
+        "-d", "--directory", type=str, help="Directory to save downloaded images/videos"
+    )
+    parser.add_argument(
+        "-l", "--limit", type=int, help="Set Limit to downloading videos"
+    )
+    parser.add_argument(
+        "-pt",
+        "--parse_type",
+        type=str,
+        choices=["images", "videos"],
+        help="Type of content to parse (" "images or videos)",
+    )
     args = parser.parse_args()
 
     parsed_args = {
-        'url': args.url,
-        'directory': args.directory,
-        'max_videos': args.limit
+        "url": args.url,
+        "directory": args.directory,
+        "max_videos": args.limit,
     }
 
     if args.url is None or args.directory is None:
