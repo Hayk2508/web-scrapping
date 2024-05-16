@@ -21,10 +21,4 @@ class MediaParser(Parser, ABC):
         base_url = "{uri.scheme}://{uri.netloc}".format(uri=urlparse(self.url))
         return urljoin(base_url, media_url)
 
-<<<<<<<<< Temporary merge branch 1
-    def fetch(self, tag: str):
-        html_content = requests.get(self.url).content
-        soup = BeautifulSoup(html_content, "lxml")
-        return soup.find_all(tag)
-=========
->>>>>>>>> Temporary merge branch 2
+
