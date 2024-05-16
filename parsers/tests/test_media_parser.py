@@ -1,8 +1,9 @@
 import os
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 
 from parsers.media_parser import MediaParser
+import tempfile
 
 
 class TestMediaParser(unittest.TestCase):
@@ -34,12 +35,15 @@ class TestMediaParser(unittest.TestCase):
     def test_download(self, mock_requests):
         mock_content = b"Image content"
         mock_requests.return_value.content = mock_content
-        abs_path = os.path.join("/path/to/directory", "image.jpg")
-        with patch("builtins.open", mock_open()) as mock_file_open:
+        with tempfile.TemporaryDirectory() as tmp_dir_name:
             media_url = "https://example.com/image.jpg"
+            media_name = "image.jpg"
+            self.parser.directory = tmp_dir_name
             self.parser.download(media_url)
 
-            mock_file_open.assert_called_once_with(abs_path, "wb")
+            file_path = os.path.join(tmp_dir_name, media_name)
+            with open(file_path, "rb") as f:
+                self.assertEqual(f.read(), mock_content)
 
 
 if __name__ == "__main__":
