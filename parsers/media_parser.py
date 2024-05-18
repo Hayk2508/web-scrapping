@@ -24,5 +24,5 @@ class MediaParser(Parser, ABC):
 
     def fetch(self, tag: str):
         html_content = requests.get(self.url).content
-        soup = BeautifulSoup(html_content, "lxml")
+        soup = BeautifulSoup(html_content, "html.parser")
         return soup.find_all(tag)
