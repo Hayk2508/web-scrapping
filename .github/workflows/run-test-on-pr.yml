@@ -2,8 +2,6 @@ name: Run Unit Tests on PR
 
 on:
   pull_request:
-    branches:
-      - main
 
 jobs:
   test:
