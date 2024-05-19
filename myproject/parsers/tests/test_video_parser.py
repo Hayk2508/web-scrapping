@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from parsers.video_parser import VideoParser
+from myproject.parsers.video_parser import VideoParser
 
 
 class TestVideoParser(unittest.TestCase):

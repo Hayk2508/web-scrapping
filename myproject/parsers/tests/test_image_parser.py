@@ -2,7 +2,7 @@ import unittest
 
 from unittest.mock import patch, MagicMock
 
-from parsers.image_parser import ImgParser
+from myproject.parsers.image_parser import ImgParser
 
 
 class TestImageParser(unittest.TestCase):

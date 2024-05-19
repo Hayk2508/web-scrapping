@@ -2,8 +2,9 @@ import os
 import unittest
 from unittest.mock import patch
 
-from parsers.media_parser import MediaParser
 import tempfile
+
+from myproject.parsers.media_parser import MediaParser
 
 
 class TestMediaParser(unittest.TestCase):
