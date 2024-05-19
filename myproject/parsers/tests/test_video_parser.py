@@ -10,8 +10,8 @@ class TestVideoParser(unittest.TestCase):
             url="https://example.com", directory="/path/to/directory", max_videos=3
         )
 
-    @patch("parsers.media_parser.MediaParser.download")
-    @patch("parsers.media_parser.MediaParser.fetch")
+    @patch("myproject.parsers.media_parser.MediaParser.download")
+    @patch("myproject.parsers.media_parser.MediaParser.fetch")
     def test_parse(self, mock_fetch, mock_download):
         mock_fetch.return_value = [
             MagicMock(
@@ -35,7 +35,7 @@ class TestVideoParser(unittest.TestCase):
                 )
             ),
         ]
-        self.parser.parse()
+        self.parser.parse(download_content=True)
         self.assertEqual(mock_fetch.call_count, 1)
         self.assertEqual(mock_download.call_count, 3)
 
