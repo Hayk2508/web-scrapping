@@ -23,5 +23,5 @@ jobs:
 
       - name: Run Django test
         run: |
-          cd webserver
+          cd web-server
           python manage.py test
