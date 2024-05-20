@@ -22,5 +22,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Django test
-        run:
+        run: |
+          cd webserver
           python manage.py test
