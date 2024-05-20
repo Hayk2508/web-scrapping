@@ -1,5 +1,5 @@
 from .media_parser import MediaParser
-from . import register_builder
+from core import register_builder
 
 
 class VideoParser(MediaParser):

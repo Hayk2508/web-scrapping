@@ -2,9 +2,9 @@ import os
 import validators
 from django.core.management.base import BaseCommand
 
-from ... import FACTORY
-from ...image_parser import ImgParserBuilder
-from ...video_parser import VideoParserBuilder
+from core import FACTORY
+from core.image_parser import ImgParserBuilder
+from core.video_parser import VideoParserBuilder
 
 
 class Command(BaseCommand):

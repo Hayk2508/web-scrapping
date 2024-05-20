@@ -1,10 +1,9 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 
-from parsers import FACTORY
-from parsers.image_parser import ImgParserBuilder
-from parsers.video_parser import VideoParserBuilder
+from core import FACTORY
+from core.image_parser import ImgParserBuilder
+from core.video_parser import VideoParserBuilder
 
 
 @require_GET
