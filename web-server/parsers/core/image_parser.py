@@ -1,4 +1,4 @@
-from core import register_builder
+from . import register_builder
 from .media_parser import MediaParser
 
 
@@ -9,13 +9,13 @@ class ImgParser(MediaParser):
     def parse(self, download_content=False):
         img_tags = self.fetch(tag="img")
         return [
-                (
-                    img.get("src")
-                    if img.get("src").startswith(("http://", "https://"))
-                    else self.process_url(media_url=img.get("src"))
-                )
-                for img in img_tags
-            ]
+            (
+                img.get("src")
+                if img.get("src").startswith(("http://", "https://"))
+                else self.process_url(media_url=img.get("src"))
+            )
+            for img in img_tags
+        ]
 
 
 @register_builder("images")

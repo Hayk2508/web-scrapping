@@ -1,5 +1,5 @@
 from .media_parser import MediaParser
-from core import register_builder
+from . import register_builder
 
 
 class VideoParser(MediaParser):
@@ -10,8 +10,14 @@ class VideoParser(MediaParser):
 
     def parse(self):
         video_tags = self.fetch(tag="video")
-        return [self.process_url(media_url=video.find("a")["href"]) if not video.find("a")["href"].startswith(
-            ("http://", "https://")) else video.find("a")["href"] for video in video_tags]
+        return [
+            (
+                self.process_url(media_url=video.find("a")["href"])
+                if not video.find("a")["href"].startswith(("http://", "https://"))
+                else video.find("a")["href"]
+            )
+            for video in video_tags
+        ]
 
 
 @register_builder("videos")

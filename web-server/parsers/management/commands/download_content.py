@@ -4,9 +4,9 @@ import requests
 import validators
 from django.core.management.base import BaseCommand
 
-from core import FACTORY
-from core.image_parser import ImgParserBuilder
-from core.video_parser import VideoParserBuilder
+from parsers.core import FACTORY
+from parsers.core.video_parser import VideoParserBuilder
+from parsers.core.image_parser import ImgParserBuilder
 
 
 def download_media_files(directory, media_urls):
@@ -72,5 +72,5 @@ class Command(BaseCommand):
 
         parser = FACTORY.create(parse_type, **parsed_args)
         media_urls = parser.parse()
-        download_media_files(directory=directory,  media_urls=media_urls)
+        download_media_files(directory=directory, media_urls=media_urls)
         self.stdout.write(f"{parse_type.upper()} downloaded successfully")
