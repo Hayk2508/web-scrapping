@@ -6,7 +6,7 @@ class ImgParser(MediaParser):
     def __init__(self, url, directory):
         super().__init__(url=url, directory=directory)
 
-    def parse(self, download_content):
+    def parse(self, download_content=False):
         img_tags = self.fetch(tag="img")
 
         if not download_content:
