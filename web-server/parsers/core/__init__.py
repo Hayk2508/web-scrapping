@@ -1,4 +1,4 @@
-from parsers.object_factory import ObjectFactory
+from parsers.core.object_factory import ObjectFactory
 
 FACTORY = ObjectFactory()
 
