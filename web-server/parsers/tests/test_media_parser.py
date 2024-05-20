@@ -4,17 +4,17 @@ from unittest.mock import patch
 
 import tempfile
 
-from myproject.parsers.media_parser import MediaParser
+from parsers.media_parser import MediaParser
 
 
 class TestMediaParser(unittest.TestCase):
-    @patch.multiple("myproject.parsers.media_parser.MediaParser", __abstractmethods__=set())
+    @patch.multiple("parsers.media_parser.MediaParser", __abstractmethods__=set())
     def setUp(self) -> None:
         self.parser = MediaParser(
             url="https://example.com", directory="/path/to/directory"
         )
 
-    @patch("myproject.parsers.media_parser.requests.get")
+    @patch("parsers.media_parser.requests.get")
     def test_fetch(self, mock_requests):
         mock_requests.return_value.content = b"""
             <html>
@@ -32,7 +32,7 @@ class TestMediaParser(unittest.TestCase):
         result = self.parser.fetch(tag)
         self.assertEqual(len(result), 3)
 
-    @patch("myproject.parsers.media_parser.requests.get")
+    @patch("parsers.media_parser.requests.get")
     def test_download(self, mock_requests):
         mock_content = b"Image content"
         mock_requests.return_value.content = mock_content

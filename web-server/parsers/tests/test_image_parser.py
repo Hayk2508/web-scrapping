@@ -2,8 +2,7 @@ import unittest
 
 from unittest.mock import patch, MagicMock
 
-
-from myproject.parsers.image_parser import ImgParser
+from parsers.image_parser import ImgParser
 
 
 class TestImageParser(unittest.TestCase):
@@ -12,8 +11,8 @@ class TestImageParser(unittest.TestCase):
             url="https://example.com", directory="/path/to/directory"
         )
 
-    @patch("myproject.parsers.media_parser.MediaParser.download")
-    @patch("myproject.parsers.media_parser.MediaParser.fetch")
+    @patch("parsers.media_parser.MediaParser.download")
+    @patch("parsers.media_parser.MediaParser.fetch")
     def test_parse(self, mock_fetch, mock_download):
         mock_fetch.return_value = [
             MagicMock(get=lambda attr: "image1.jpg"),

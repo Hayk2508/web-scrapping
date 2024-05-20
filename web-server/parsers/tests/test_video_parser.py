@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from myproject.parsers.video_parser import VideoParser
+from parsers.video_parser import VideoParser
 
 
 class TestVideoParser(unittest.TestCase):
@@ -10,8 +10,8 @@ class TestVideoParser(unittest.TestCase):
             url="https://example.com", directory="/path/to/directory", max_videos=3
         )
 
-    @patch("myproject.parsers.media_parser.MediaParser.download")
-    @patch("myproject.parsers.media_parser.MediaParser.fetch")
+    @patch("parsers.media_parser.MediaParser.download")
+    @patch("parsers.media_parser.MediaParser.fetch")
     def test_parse(self, mock_fetch, mock_download):
         mock_fetch.return_value = [
             MagicMock(
