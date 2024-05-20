@@ -1,10 +1,24 @@
 import os
+
+import requests
 import validators
 from django.core.management.base import BaseCommand
 
 from core import FACTORY
 from core.image_parser import ImgParserBuilder
 from core.video_parser import VideoParserBuilder
+
+
+def download_media_files(directory, media_urls):
+    for media_url in media_urls:
+        download_media_file(directory=directory, media_url=media_url)
+
+
+def download_media_file(directory, media_url: str):
+    media_name = os.path.basename(media_url)
+    abs_path = os.path.join(directory, media_name)
+    with open(abs_path, "wb") as file:
+        file.write(requests.get(media_url).content)
 
 
 class Command(BaseCommand):
@@ -53,10 +67,10 @@ class Command(BaseCommand):
 
         parsed_args = {
             "url": url,
-            "directory": directory,
             "max_videos": limit,
         }
 
         parser = FACTORY.create(parse_type, **parsed_args)
-        parser.parse(download_content=True)
+        media_urls = parser.parse()
+        download_media_files(directory=directory,  media_urls=media_urls)
         self.stdout.write(f"{parse_type.upper()} downloaded successfully")

@@ -7,5 +7,5 @@ class Parser(ABC):
         self.url = url
 
     @abstractmethod
-    def parse(self, download_content):
+    def parse(self):
         pass
