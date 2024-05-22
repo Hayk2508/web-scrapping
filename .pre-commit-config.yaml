@@ -4,5 +4,16 @@ repos:
   hooks:
     - id: black
 
-
+#if you do not have pre-commit package
+#install it with
+#
+#-pip install pre-commit
+#
+#install pre-commit logic with default_install_hook_types:
+#
+#-pre-commit install
+#
+#if you change the file use for updating previouse installetion
+#
+#-pre-commit autoupdate
 #
