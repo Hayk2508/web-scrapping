@@ -9,7 +9,7 @@ from parsers.core.image_parser import ImgParserBuilder
 from parsers.serializers import ParseContentReqSerializer, ParseContentRespSerializer
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def parse_content(request):
     serializer_req = ParseContentReqSerializer(data=request.query_params)
     if not serializer_req.is_valid():
@@ -26,9 +26,8 @@ def parse_content(request):
     parser = FACTORY.create(parse_type, **parsed_args)
     parsed_objects = parser.parse()
     response_data = [{"obj_type": parse_type, "data": obj} for obj in parsed_objects]
-    serializer_resp = ParseContentRespSerializer(data=response_data,  many=True)
+    serializer_resp = ParseContentRespSerializer(data=response_data, many=True)
 
     if not serializer_resp.is_valid():
         raise APIException(serializer_resp.errors, code=status.HTTP_400_BAD_REQUEST)
     return Response(serializer_resp.validated_data)
-
