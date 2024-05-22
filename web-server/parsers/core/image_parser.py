@@ -6,7 +6,7 @@ class ImgParser(MediaParser):
     def __init__(self, url):
         super().__init__(url=url)
 
-    def parse(self, download_content=False):
+    def parse(self):
         img_tags = self.fetch(tag="img")
         return [
             (
