@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import parse_content, ParsersApiView
+
+from parsers.views import parse_content
 
 urlpatterns = [
-    path("parse", parse_content, name="parse_content"),
-    path("parse-content", ParsersApiView.as_view())
+    path("parse", parse_content, name="parse_content")
 ]
 
