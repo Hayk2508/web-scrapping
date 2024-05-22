@@ -1,16 +1,10 @@
-name: Check black-format
+name: Lint
 
-on: pull_request
+on: [pull_request]
 
 jobs:
-  linter_name:
-    name: runner / black formatter
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12.3'
-      - uses: rickstaa/action-black@v1
-        with:
-          black_args: ". --check"
+      - uses: actions/checkout@v3
+      - uses: psf/black@stable
