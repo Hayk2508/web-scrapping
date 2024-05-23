@@ -10,4 +10,4 @@ class ParseContentReqSerializer(serializers.Serializer):
 
 class ParseContentRespSerializer(serializers.Serializer):
     obj_type = serializers.CharField()
-    data = serializers.CharField()
+    data = serializers.DictField()
