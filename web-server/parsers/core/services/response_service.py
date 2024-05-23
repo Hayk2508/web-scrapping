@@ -6,5 +6,3 @@ def create_response(data, serializer_class) -> Response:
     if not serializer_resp.is_valid():
         raise ValueError("Internal Server Error")
     return Response(serializer_resp.validated_data)
-
-
