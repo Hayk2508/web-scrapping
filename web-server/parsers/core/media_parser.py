@@ -19,3 +19,7 @@ class MediaParser(Parser, ABC):
         html_content = requests.get(self.url).content
         soup = BeautifulSoup(html_content, "html.parser")
         return soup.find_all(tag)
+
+    @staticmethod
+    def to_data(obj) -> dict:
+        return {"url": obj}
