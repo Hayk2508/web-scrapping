@@ -21,8 +21,7 @@ def parse_content(request):
     parser = FACTORY.create(parse_type, **parsed_args)
     parsed_objects = parser.parse()
     response_data = [
-        {"obj_type": parse_type, "data": parser.to_data(obj)}
-        for obj in parsed_objects
+        {"obj_type": parse_type, "data": parser.to_data(obj)} for obj in parsed_objects
     ]
     return create_response(
         data=response_data, serializer_class=ParseContentRespSerializer
