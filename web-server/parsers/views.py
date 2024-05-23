@@ -1,7 +1,8 @@
 from rest_framework.decorators import api_view
-
 from parsers.core import FACTORY
 from core.services.response_service import create_response
+from parsers.core.image_parser import ImgParserBuilder
+from parsers.core.video_parser import VideoParserBuilder
 from parsers.serializers import ParseContentReqSerializer, ParseContentRespSerializer
 
 
@@ -24,5 +25,5 @@ def parse_content(request):
         {"obj_type": parse_type, "data": parser.to_data(obj)} for obj in parsed_objects
     ]
     return create_response(
-        data=response_data, serializer_class=ParseContentRespSerializer
+        data=response_data, serializer_class=ParseContentRespSerializer, many=True
     )
