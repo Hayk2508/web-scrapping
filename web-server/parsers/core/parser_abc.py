@@ -9,3 +9,7 @@ class Parser(ABC):
     @abstractmethod
     def parse(self):
         pass
+
+    @abstractmethod
+    def to_data(self, obj) -> dict:
+        pass
