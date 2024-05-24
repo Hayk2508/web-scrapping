@@ -1,9 +1,15 @@
+<<<<<<< black-check
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from parsers.core import FACTORY
+=======
 from rest_framework.decorators import api_view
 from parsers.core import FACTORY
 from core.services.response_service import create_response
 from parsers.core.image_parser import ImgParserBuilder
 from parsers.core.video_parser import VideoParserBuilder
 from parsers.serializers import ParseContentReqSerializer, ParseContentRespSerializer
+>>>>>>> master
 
 
 @api_view(["GET"])
