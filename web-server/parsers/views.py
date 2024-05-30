@@ -29,10 +29,10 @@ def parse_content(request):
 
 
 @api_view(["GET"])
-def ppppp(request):
+def throw_error(request):
     raise NotImplementedError("aa")
 
 
 @api_view(["GET"])
-def ddddd(request):
+def return_8(request):
     return Response(8)
