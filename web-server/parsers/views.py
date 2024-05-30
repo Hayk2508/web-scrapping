@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from parsers.core import FACTORY
 from core.services.response_service import create_response
 from parsers.serializers import ParseContentReqSerializer, ParseContentRespSerializer
+from rest_framework.response import Response
 
 
 @api_view(["GET"])
@@ -25,3 +26,13 @@ def parse_content(request):
     return create_response(
         data=response_data, serializer_class=ParseContentRespSerializer, many=True
     )
+
+
+@api_view(["GET"])
+def throw_error(request):
+    raise NotImplementedError("aa")
+
+
+@api_view(["GET"])
+def return_8(request):
+    return Response(8)
