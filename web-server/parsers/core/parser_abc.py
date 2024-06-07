@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from parsers.models import Url
+
 
 class Parser(ABC):
 
@@ -13,3 +15,8 @@ class Parser(ABC):
     @abstractmethod
     def to_data(self, obj) -> dict:
         pass
+
+    def create_url(self):
+
+        if not Url.objects.filter(url=self.url).exists():
+            Url.objects.create(url=self.url)

@@ -3,6 +3,8 @@ from abc import ABC
 from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
+from django.forms import model_to_dict
+
 from .parser_abc import Parser
 
 
@@ -21,4 +23,10 @@ class MediaParser(Parser, ABC):
         return soup.find_all(tag)
 
     def to_data(self, obj) -> dict:
-        return {"url": obj}
+        obj_dict = model_to_dict(obj)
+        attr = next(
+            (value for key, value in obj_dict.items() if key.endswith("_url")), None
+        )
+        if not attr:
+            return {"text": attr}
+        return {"url": attr}
