@@ -1,12 +1,25 @@
 from django.contrib.contenttypes.models import ContentType
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from parsers.core import FACTORY
 
 from core.services.response_service import create_response
 from parsers.core.image_parser import ImgParserBuilder
 from parsers.core.video_parser import VideoParserBuilder
-from parsers.models import Url, ImageParser, VideoParser, ParsedObject
-from parsers.serializers import ParseContentReqSerializer, ParseContentRespSerializer
+from parsers.models import (
+    Url,
+    ImageParser,
+    VideoParser,
+    ParsedObject,
+    ImageParsedObject,
+    VideoParsedObject,
+)
+from parsers.serializers import (
+    ParseContentReqSerializer,
+    ParseContentRespSerializer,
+    ImageParsedObjectSerializer,
+    VideoParsedObjectSerializer,
+)
 
 
 @api_view(["GET"])
@@ -31,3 +44,13 @@ def parse_content(request):
     return create_response(
         data=response_data, serializer_class=ParseContentRespSerializer, many=True
     )
+
+
+class ImageParsedObjectViewSet(viewsets.ModelViewSet):
+    queryset = ImageParsedObject.objects.all()
+    serializer_class = ImageParsedObjectSerializer
+
+
+class VideoParsedObjectViewSet(viewsets.ModelViewSet):
+    queryset = VideoParsedObject.objects.all()
+    serializer_class = VideoParsedObjectSerializer
