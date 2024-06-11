@@ -1,25 +1,10 @@
-from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-
-class Date(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
+from core.base_models import TimeStamp
 
 
-class Url(Date):
+class Parser(TimeStamp):
     url = models.URLField(unique=True)
-
-
-class Parser(Date):
-    url = models.ForeignKey(Url, on_delete=models.CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey("content_type", "object_id")
 
     class Meta:
         abstract = True
@@ -33,27 +18,25 @@ class VideoParser(Parser):
     pass
 
 
-class ParsedObject(Date):
+class ParsedObject(TimeStamp):
+    obj_type = models.CharField()
 
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.obj_type
+
 
 class ImageParsedObject(ParsedObject):
-    parsed_objects = GenericRelation(
-        ImageParser,
-        content_type_field="content_type",
-        object_id_field="object_id",
-        related_query_name="parser",
-    )
     image_url = models.URLField()
+    image_parser = models.ForeignKey(
+        ImageParser, on_delete=models.CASCADE, related_name="image_parsed_objects"
+    )
 
 
 class VideoParsedObject(ParsedObject):
-    parsed_objects = GenericRelation(
-        VideoParser,
-        content_type_field="content_type",
-        object_id_field="object_id",
-        related_query_name="parser",
-    )
     video_url = models.URLField()
+    video_parser = models.ForeignKey(
+        VideoParser, on_delete=models.CASCADE, related_name="video_parsed_objects"
+    )
