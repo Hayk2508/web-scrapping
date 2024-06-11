@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from . import register_builder
 from .media_parser import MediaParser
-from ..models import Url, ImageParser, ParsedObject, ImageParsedObject
+from ..models import ImageParser, ImageParsedObject
 
 
 class ImgParser(MediaParser):
@@ -10,26 +10,30 @@ class ImgParser(MediaParser):
         super().__init__(url=url)
 
     def parse(self):
-        self.create_url()
-        url_website = Url.objects.get(url=self.url)
-        image_parsed_objects = set()
+        image_parser, created = ImageParser.objects.get_or_create(url=self.url)
+
+        image_parsed_objects = []
+
         img_tags = self.fetch(tag="img")
+
         for img in img_tags:
             img_url = img.get("src")
-            if not img.get("src").startswith(("http://", "https://")):
-                self.process_url(media_url=img.get("src"))
-            image_parser = ImageParser.objects.create(
-                url=url_website,
-                content_type=ContentType.objects.get_for_model(ImageParsedObject),
-            )
-            if not ImageParsedObject.objects.filter(image_url=img_url).exists():
-                parsed_object = ImageParsedObject.objects.create(image_url=img_url)
-                image_parser.content_object = parsed_object
-                image_parser.save()
-            else:
-                parsed_object = ImageParsedObject.objects.get(image_url=img_url)
-            image_parsed_objects.add(parsed_object)
-        return image_parsed_objects
+
+            if not img_url.startswith(("http://", "https://")):
+                img_url = self.process_url(media_url=img_url)
+
+            if not ImageParsedObject.objects.filter(
+                image_url=img_url, image_parser=image_parser
+            ).exists():
+                image_parsed_objects.append(
+                    ImageParsedObject(
+                        image_url=img_url, obj_type="image", image_parser=image_parser
+                    )
+                )
+
+        ImageParsedObject.objects.bulk_create(image_parsed_objects)
+
+        return image_parser.image_parsed_objects.all()
 
 
 @register_builder("images")
