@@ -19,7 +19,7 @@ jobs:
 
     env:
       GITHUB_WORKFLOW: true
-      DJANGO_SETTINGS_MODULE: web-server.core.settings_tests
+      DJANGO_SETTINGS_MODULE: core.settings_tests
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/github_actions
 
     steps:
