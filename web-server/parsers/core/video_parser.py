@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from .media_parser import MediaParser
 from . import register_builder
-from ..models import VideoParsedObject
+from ..models import VideoParsedObject, VideoParser as Video_Parser
 
 
 class VideoParser(MediaParser):
@@ -12,10 +12,9 @@ class VideoParser(MediaParser):
         self.max_videos = max_videos
 
     def parse(self):
-        video_parser, created = VideoParser.objects.get_or_create(url=self.url)
+        video_parser, created = Video_Parser.objects.get_or_create(url=self.url)
 
         video_tags = self.fetch(tag="video")
-        video_urls = []
         video_parsed_objects = []
 
         for video in video_tags:
