@@ -10,7 +10,8 @@ class TestImageParser(TestCase):
         self.parser = ImgParser(url="https://example.com")
 
     @patch("parsers.core.media_parser.MediaParser.fetch")
-    def test_parse(self, mock_fetch):
+    @patch("parsers.models.ImageParsedObject.objects.bulk_create")
+    def test_parse(self, mock_bulk_create, mock_fetch):
         mock_fetch.return_value = [
             MagicMock(get=lambda attr: "image1.jpg"),
             MagicMock(get=lambda attr: "image2.jpg"),
@@ -18,11 +19,13 @@ class TestImageParser(TestCase):
         self.parser.parse()
         self.assertEqual(mock_fetch.call_count, 1)
 
+        created_objects = mock_bulk_create.call_args[0][0]
+        self.assertEqual(len(created_objects), 2)
+
 
 class TestMediaParser(TestCase):
     @patch.multiple("parsers.core.media_parser.MediaParser", __abstractmethods__=set())
     def setUp(self) -> None:
-
         self.parser = MediaParser(url="https://example.com")
 
     @patch("parsers.core.media_parser.requests.get")
@@ -49,7 +52,8 @@ class TestVideoParser(TestCase):
         self.parser = VideoParser(url="https://example.com", max_videos=3)
 
     @patch("parsers.core.media_parser.MediaParser.fetch")
-    def test_parse(self, mock_fetch):
+    @patch("parsers.models.VideoParsedObject.objects.bulk_create")
+    def test_parse(self, mock_bulk_create, mock_fetch):
         mock_fetch.return_value = [
             MagicMock(
                 find=lambda tag: MagicMock(
@@ -66,11 +70,11 @@ class TestVideoParser(TestCase):
                     get=lambda attr: "https://example.com/video3.mp4"
                 )
             ),
-            MagicMock(
-                find=lambda tag: MagicMock(
-                    get=lambda attr: "https://example.com/video4.mp4"
-                )
-            ),
         ]
+
         self.parser.parse()
+
         self.assertEqual(mock_fetch.call_count, 1)
+
+        created_objects = mock_bulk_create.call_args[0][0]
+        self.assertEqual(len(created_objects), 3)
