@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from parsers.core import FACTORY
@@ -7,7 +6,6 @@ from core.services.response_service import create_response
 from parsers.core.image_parser import ImgParserBuilder
 from parsers.core.video_parser import VideoParserBuilder
 from parsers.models import (
-    Url,
     ImageParser,
     VideoParser,
     ParsedObject,
@@ -38,8 +36,7 @@ def parse_content(request):
 
     for parsed_object in parsed_objects:
         data = parser.to_data(parsed_object)
-        content_type = ContentType.objects.get_for_model(parsed_object)
-        response_data.append({"obj_type": content_type.name, "data": data})
+        response_data.append({"obj_type": parsed_object.obj_type, "data": data})
 
     return create_response(
         data=response_data, serializer_class=ParseContentRespSerializer, many=True
