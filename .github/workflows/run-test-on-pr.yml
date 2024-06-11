@@ -1,27 +1,38 @@
-name: Run Unit Tests on PR
+name: Django CI
 
-on:
-  pull_request:
+on:  pull_request
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: github_actions
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      GITHUB_WORKFLOW: true
+      DJANGO_SETTINGS_MODULE: web-server.core.settings_tests
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/github_actions
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v2
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.12.3'
-
+          python-version: '3.8'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Run Django test
+      - name: Run tests
         run: |
-          cd web-server
+          python manage.py migrate
           python manage.py test
