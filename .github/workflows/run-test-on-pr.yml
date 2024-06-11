@@ -35,5 +35,4 @@ jobs:
       - name: Run tests
         run: |
           cd web-server
-          python manage.py migrate
           python manage.py test
