@@ -1,13 +1,14 @@
 from django.db import models
+from polymorphic.managers import PolymorphicManager
 
 from core.base_models import TimeStamp
+from polymorphic.models import PolymorphicModel
+
+from parsers.core.media_parser import Parsers
 
 
-class Parser(TimeStamp):
+class Parser(TimeStamp, PolymorphicModel):
     url = models.URLField(unique=True)
-
-    class Meta:
-        abstract = True
 
 
 class ImageParser(Parser):
@@ -18,25 +19,25 @@ class VideoParser(Parser):
     pass
 
 
-class ParsedObject(TimeStamp):
-    obj_type = models.CharField()
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return self.obj_type
+class ParsedObject(TimeStamp, PolymorphicModel):
+    parser = models.ForeignKey(Parser, on_delete=models.CASCADE)
 
 
 class ImageParsedObject(ParsedObject):
     image_url = models.URLField()
-    image_parser = models.ForeignKey(
-        ImageParser, on_delete=models.CASCADE, related_name="image_parsed_objects"
-    )
+
+    def to_type(self):
+        return Parsers.IMAGES.value
+
+    def to_data(self):
+        return {"image_url": self.image_url}
 
 
 class VideoParsedObject(ParsedObject):
     video_url = models.URLField()
-    video_parser = models.ForeignKey(
-        VideoParser, on_delete=models.CASCADE, related_name="video_parsed_objects"
-    )
+
+    def to_type(self):
+        return Parsers.VIDEOS.value
+
+    def to_data(self):
+        return {"video_url": self.video_url}
