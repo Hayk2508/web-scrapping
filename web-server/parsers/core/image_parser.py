@@ -1,8 +1,6 @@
-from django.contrib.contenttypes.models import ContentType
-
 from . import register_builder
-from .media_parser import MediaParser
-from ..models import ImageParser, ImageParsedObject
+from .media_parser import MediaParser, Parsers
+from ..models import ImageParser, ImageParsedObject, Parser, ParsedObject
 
 
 class ImgParser(MediaParser):
@@ -11,32 +9,30 @@ class ImgParser(MediaParser):
 
     def parse(self):
         image_parser, created = ImageParser.objects.get_or_create(url=self.url)
-
-        image_parsed_objects = []
-
         img_tags = self.fetch(tag="img")
-
         for img in img_tags:
             img_url = img.get("src")
 
+            if not img_url:
+                potential_attributes = ["data-src", "srcset"]
+                for attr in potential_attributes:
+                    img_url = img.get(attr)
+                    if attr == "srcset":
+                        img_url = img_url.split(",")[0].split()[0]
+                    if img_url:
+                        break
             if not img_url.startswith(("http://", "https://")):
                 img_url = self.process_url(media_url=img_url)
 
             if not ImageParsedObject.objects.filter(
-                image_url=img_url, image_parser=image_parser
+                image_url=img_url, parser=image_parser
             ).exists():
-                image_parsed_objects.append(
-                    ImageParsedObject(
-                        image_url=img_url, obj_type="image", image_parser=image_parser
-                    )
-                )
+                ImageParsedObject.objects.create(image_url=img_url, parser=image_parser)
 
-        ImageParsedObject.objects.bulk_create(image_parsed_objects)
-
-        return image_parser.image_parsed_objects.all()
+        return ParsedObject.objects.filter(parser=image_parser)
 
 
-@register_builder("images")
+@register_builder(Parsers.IMAGES)
 class ImgParserBuilder:
     def __call__(self, url: str, **_ignored):
         return ImgParser(url=url)
