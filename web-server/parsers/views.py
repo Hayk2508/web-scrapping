@@ -15,8 +15,7 @@ from parsers.models import (
 from parsers.serializers import (
     ParseContentReqSerializer,
     ParseContentRespSerializer,
-    ImageParsedObjectSerializer,
-    VideoParsedObjectSerializer,
+    ParsedObjectSerializer,
 )
 
 
@@ -35,19 +34,14 @@ def parse_content(request):
     response_data = []
 
     for parsed_object in parsed_objects:
-        data = parser.to_data(parsed_object)
-        response_data.append({"obj_type": parsed_object.obj_type, "data": data})
+        data = parsed_object.to_data()
+        response_data.append({"obj_type": parsed_object.to_type(), "data": data})
 
     return create_response(
         data=response_data, serializer_class=ParseContentRespSerializer, many=True
     )
 
 
-class ImageParsedObjectViewSet(viewsets.ModelViewSet):
-    queryset = ImageParsedObject.objects.all()
-    serializer_class = ImageParsedObjectSerializer
-
-
-class VideoParsedObjectViewSet(viewsets.ModelViewSet):
-    queryset = VideoParsedObject.objects.all()
-    serializer_class = VideoParsedObjectSerializer
+class ParsedObjectViewSet(viewsets.ModelViewSet):
+    queryset = ParsedObject.objects.all()
+    serializer_class = ParsedObjectSerializer
