@@ -18,9 +18,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     env:
-      GITHUB_WORKFLOW: true
       DJANGO_SETTINGS_MODULE: core.settings_tests
-      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/github_actions
 
     steps:
       - uses: actions/checkout@v4

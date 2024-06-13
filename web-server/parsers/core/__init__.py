@@ -5,7 +5,7 @@ FACTORY = ObjectFactory()
 
 def register_builder(key):
     def decorator(cls):
-        FACTORY.register_builder(key, cls())
+        FACTORY.register_builder(key.value, cls())
         return cls
 
     return decorator
