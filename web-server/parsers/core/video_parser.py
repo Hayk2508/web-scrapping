@@ -1,8 +1,6 @@
-from django.contrib.contenttypes.models import ContentType
-
-from .media_parser import MediaParser
+from .media_parser import MediaParser, Parsers
 from . import register_builder
-from ..models import VideoParsedObject, VideoParser as Video_Parser
+from ..models import VideoParsedObject, VideoParser as Video_Parser, ParsedObject
 
 
 class VideoParser(MediaParser):
@@ -15,24 +13,23 @@ class VideoParser(MediaParser):
         video_parser, created = Video_Parser.objects.get_or_create(url=self.url)
 
         video_tags = self.fetch(tag="video")
-        video_parsed_objects = []
 
         for video in video_tags:
             video_url = video.find("a")["href"]
             if not video_url.startswith(("http://", "https://")):
                 video_url = self.process_url(media_url=video_url)
 
-            video_parsed_objects.append(
-                VideoParsedObject(
-                    video_url=video_url, obj_type="video", video_parser=video_parser
+            if not VideoParsedObject.objects.filter(
+                video_url=video_url, parser=video_parser
+            ).exists():
+                VideoParsedObject.objects.create(
+                    video_url=video_url, parser=video_parser
                 )
-            )
 
-        VideoParsedObject.objects.bulk_create(video_parsed_objects)
-        return video_parser.video_parsed_objects.all()
+        return ParsedObject.objects.filter(parser=video_parser)
 
 
-@register_builder("videos")
+@register_builder(Parsers.VIDEOS)
 class VideoParserBuilder:
     def __call__(self, url: str, max_videos: int):
         return VideoParser(url=url, max_videos=max_videos)
