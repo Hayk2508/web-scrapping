@@ -4,8 +4,13 @@ from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 from django.forms import model_to_dict
-
+from enum import Enum
 from .parser_abc import Parser
+
+
+class Parsers(Enum):
+    IMAGES = "images"
+    VIDEOS = "videos"
 
 
 class MediaParser(Parser, ABC):
@@ -21,12 +26,3 @@ class MediaParser(Parser, ABC):
         html_content = requests.get(self.url).content
         soup = BeautifulSoup(html_content, "html.parser")
         return soup.find_all(tag)
-
-    def to_data(self, obj) -> dict:
-        obj_dict = model_to_dict(obj)
-        attr = next(
-            (value for key, value in obj_dict.items() if key.endswith("_url")), None
-        )
-        if not attr:
-            return {"text": attr}
-        return {"url": attr}
