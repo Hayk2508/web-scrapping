@@ -3,6 +3,7 @@ from django.test import TestCase
 from parsers.core.image_parser import ImgParser
 from parsers.core.media_parser import MediaParser
 from parsers.core.video_parser import VideoParser
+from parsers.models import ImageParsedObject, ImageParser, VideoParsedObject
 
 
 class TestImageParser(TestCase):
@@ -10,17 +11,19 @@ class TestImageParser(TestCase):
         self.parser = ImgParser(url="https://example.com")
 
     @patch("parsers.core.media_parser.MediaParser.fetch")
-    @patch("parsers.models.ImageParsedObject.objects.bulk_create")
-    def test_parse(self, mock_bulk_create, mock_fetch):
+    def test_parse(self, mock_fetch):
         mock_fetch.return_value = [
             MagicMock(get=lambda attr: "image1.jpg"),
             MagicMock(get=lambda attr: "image2.jpg"),
         ]
+
         self.parser.parse()
+
         self.assertEqual(mock_fetch.call_count, 1)
 
-        created_objects = mock_bulk_create.call_args[0][0]
-        self.assertEqual(len(created_objects), 2)
+        image_parsed_objects = ImageParsedObject.objects.all()
+
+        self.assertEqual(len(image_parsed_objects), 2)
 
 
 class TestMediaParser(TestCase):
@@ -52,8 +55,10 @@ class TestVideoParser(TestCase):
         self.parser = VideoParser(url="https://example.com", max_videos=3)
 
     @patch("parsers.core.media_parser.MediaParser.fetch")
-    @patch("parsers.models.VideoParsedObject.objects.bulk_create")
-    def test_parse(self, mock_bulk_create, mock_fetch):
+    @patch.object(VideoParsedObject.objects, "filter")
+    @patch.object(VideoParsedObject.objects, "create")
+    def test_parse(self, mock_create, mock_filter, mock_fetch):
+        # Mock fetch to return video tags with href attributes
         mock_fetch.return_value = [
             MagicMock(
                 find=lambda tag: MagicMock(
@@ -72,9 +77,12 @@ class TestVideoParser(TestCase):
             ),
         ]
 
+        mock_filter.return_value.exists.return_value = False
+
+        mock_create.side_effect = lambda **kwargs: VideoParsedObject(**kwargs)
+
         self.parser.parse()
 
         self.assertEqual(mock_fetch.call_count, 1)
 
-        created_objects = mock_bulk_create.call_args[0][0]
-        self.assertEqual(len(created_objects), 3)
+        self.assertEqual(mock_create.call_count, 3)
