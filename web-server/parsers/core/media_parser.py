@@ -1,16 +1,8 @@
-import os
 from abc import ABC
 from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
-from django.forms import model_to_dict
-from enum import Enum
 from .parser_abc import Parser
-
-
-class Parsers(Enum):
-    IMAGES = "images"
-    VIDEOS = "videos"
 
 
 class MediaParser(Parser, ABC):
