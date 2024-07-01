@@ -1,8 +1,6 @@
 from rest_framework.response import Response
 
 
-
-
 def validate_response(response_serializer, data=None, instance=None, many=False):
     if instance is not None:
         serializer = response_serializer(instance, many=many)
