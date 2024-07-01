@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from parsers.core import FACTORY
+from parsers.core import PARSERS_FACTORY, PARSED_OBJECTS_FACTORY
 
 from core.services.response_service import create_response
 from parsers.core.image_parser import ImgParserBuilder
@@ -11,11 +11,13 @@ from parsers.models import (
     ParsedObject,
     ImageParsedObject,
     VideoParsedObject,
+    ImageParsedObjectBuilder,
+    VideoParsedObjectBuilder,
 )
 from parsers.serializers import (
     ParseContentReqSerializer,
-    ParseContentRespSerializer,
     ParsedObjectSerializer,
+    CreateParsedObjectSerializer,
 )
 
 
@@ -23,25 +25,30 @@ from parsers.serializers import (
 def parse_content(request):
     serializer_req = ParseContentReqSerializer(data=request.query_params)
     serializer_req.is_valid(raise_exception=True)
-
     url = serializer_req.validated_data["url"]
     parse_type = serializer_req.validated_data["parse_type"]
-    parsed_args = {"url": url}
+    max_videos = serializer_req.validated_data["max_videos"]
+    parsed_args = {"url": url, "max_videos": max_videos}
 
-    parser = FACTORY.create(parse_type, **parsed_args)
+    parser = PARSERS_FACTORY.create(parse_type, **parsed_args)
     parsed_objects = parser.parse()
-
-    response_data = []
-
-    for parsed_object in parsed_objects:
-        data = parsed_object.to_data()
-        response_data.append({"obj_type": parsed_object.to_type(), "data": data})
-
     return create_response(
-        data=response_data, serializer_class=ParseContentRespSerializer, many=True
+        instance=parsed_objects, serializer=ParsedObjectSerializer, many=True
     )
 
 
 class ParsedObjectViewSet(viewsets.ModelViewSet):
     queryset = ParsedObject.objects.all()
     serializer_class = ParsedObjectSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = CreateParsedObjectSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        obj_type = serializer.validated_data["obj_type"]
+        parsed_object = PARSED_OBJECTS_FACTORY.create(
+            obj_type, **serializer.validated_data
+        )
+        parsed_object.save()
+        return create_response(
+            instance=parsed_object, serializer=ParsedObjectSerializer, many=False
+        )
