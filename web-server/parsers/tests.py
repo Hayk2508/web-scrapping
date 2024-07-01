@@ -58,7 +58,6 @@ class TestVideoParser(TestCase):
     @patch.object(VideoParsedObject.objects, "filter")
     @patch.object(VideoParsedObject.objects, "create")
     def test_parse(self, mock_create, mock_filter, mock_fetch):
-        # Mock fetch to return video tags with href attributes
         mock_fetch.return_value = [
             MagicMock(
                 find=lambda tag: MagicMock(
@@ -81,8 +80,6 @@ class TestVideoParser(TestCase):
 
         mock_create.side_effect = lambda **kwargs: VideoParsedObject(**kwargs)
 
-        self.parser.parse()
-
+        vide_parsed_objects = self.parser.parse()
         self.assertEqual(mock_fetch.call_count, 1)
-
-        self.assertEqual(mock_create.call_count, 3)
+        self.assertEqual(len(vide_parsed_objects), 3)
