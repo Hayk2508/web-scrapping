@@ -4,6 +4,10 @@ from parsers.core import PARSERS_FACTORY, PARSED_OBJECTS_FACTORY
 
 from core.services.response_service import create_response
 from parsers.core.image_parser import ImgParserBuilder
+from parsers.core.parsed_object_service import (
+    create_parsed_object,
+    update_parsed_object,
+)
 from parsers.core.video_parser import VideoParserBuilder
 from parsers.models import (
     ImageParser,
@@ -45,10 +49,16 @@ class ParsedObjectViewSet(viewsets.ModelViewSet):
         serializer = CreateParsedObjectSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         obj_type = serializer.validated_data["obj_type"]
-        parsed_object = PARSED_OBJECTS_FACTORY.create(
-            obj_type, **serializer.validated_data
-        )
-        parsed_object.save()
+        parsed_object = create_parsed_object(obj_type, serializer.validated_data)
         return create_response(
             instance=parsed_object, serializer=ParsedObjectSerializer, many=False
+        )
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = CreateParsedObjectSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        update_parsed_object(obj=instance, data=serializer.validated_data)
+        return create_response(
+            instance=instance, serializer=ParsedObjectSerializer, many=False
         )
