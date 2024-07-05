@@ -15,13 +15,16 @@ from parsers.models import (
     ParsedObject,
     ImageParsedObject,
     VideoParsedObject,
-    ImageParsedObjectBuilder,
-    VideoParsedObjectBuilder,
 )
 from parsers.serializers import (
     ParseContentReqSerializer,
     ParsedObjectSerializer,
     CreateParsedObjectSerializer,
+)
+
+from parsers.core.parsed_objects_builders import (
+    ImageParsedObjectBuilder,
+    VideoParsedObjectBuilder,
 )
 
 
