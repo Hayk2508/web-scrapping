@@ -22,11 +22,6 @@ from parsers.serializers import (
     CreateParsedObjectSerializer,
 )
 
-from parsers.core.parsed_objects_builders import (
-    ImageParsedObjectBuilder,
-    VideoParsedObjectBuilder,
-)
-
 
 @api_view(["GET"])
 def parse_content(request):

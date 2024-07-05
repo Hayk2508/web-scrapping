@@ -1,7 +1,11 @@
 from parsers.core import PARSERS_FACTORY, PARSED_OBJECTS_FACTORY
 from rest_framework import serializers
 
-from parsers.models import ParsedObject, ImageParsedObject, VideoParsedObject
+from parsers.models import ParsedObject
+from parsers.core.parsed_objects_builders import (
+    ImageParsedObjectBuilder,
+    VideoParsedObjectBuilder,
+)
 
 
 class ParseContentReqSerializer(serializers.Serializer):

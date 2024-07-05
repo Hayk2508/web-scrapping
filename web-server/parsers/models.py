@@ -2,8 +2,6 @@ from django.db import models
 
 from core.base_models import TimeStamp
 from polymorphic.models import PolymorphicModel
-
-from parsers.core import register_parsed_objects_builder
 from parsers.core.enums import Parsers
 
 
