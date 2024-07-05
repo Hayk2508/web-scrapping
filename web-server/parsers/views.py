@@ -1,21 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from parsers.core import PARSERS_FACTORY, PARSED_OBJECTS_FACTORY
+from parsers.core import PARSERS_FACTORY
 
 from core.services.response_service import create_response
-from parsers.core.image_parser import ImgParserBuilder
 from parsers.core.parsed_object_service import (
     create_parsed_object,
     update_parsed_object,
 )
-from parsers.core.video_parser import VideoParserBuilder
-from parsers.models import (
-    ImageParser,
-    VideoParser,
-    ParsedObject,
-    ImageParsedObject,
-    VideoParsedObject,
-)
+from parsers.models import ParsedObject
 from parsers.serializers import (
     ParseContentReqSerializer,
     ParsedObjectSerializer,
