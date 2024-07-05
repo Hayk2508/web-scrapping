@@ -29,7 +29,6 @@ class ParsedObject(TimeStamp, PolymorphicModel):
         pass
 
 
-
 class ImageParsedObject(ParsedObject):
     image_url = models.URLField()
 
@@ -38,7 +37,6 @@ class ImageParsedObject(ParsedObject):
 
     def to_data(self):
         return {"image_url": self.image_url}
-
 
 
 class VideoParsedObject(ParsedObject):
