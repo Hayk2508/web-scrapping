@@ -1,7 +1,18 @@
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from parsers.core import FACTORY
+from parsers.core import PARSERS_FACTORY
+
 from core.services.response_service import create_response
-from parsers.serializers import ParseContentReqSerializer, ParseContentRespSerializer
+from parsers.core.parsed_object_service import (
+    create_parsed_object,
+    update_parsed_object,
+)
+from parsers.models import ParsedObject
+from parsers.serializers import (
+    ParseContentReqSerializer,
+    ParsedObjectSerializer,
+    CreateParsedObjectSerializer,
+)
 
 
 @api_view(["GET"])
@@ -10,18 +21,34 @@ def parse_content(request):
     serializer_req.is_valid(raise_exception=True)
     url = serializer_req.validated_data["url"]
     parse_type = serializer_req.validated_data["parse_type"]
+    max_videos = serializer_req.validated_data["max_videos"]
+    parsed_args = {"url": url, "max_videos": max_videos}
 
-    parsed_args = {
-        "url": url,
-        "directory": "",
-        "max_videos": 0,
-    }
-
-    parser = FACTORY.create(parse_type, **parsed_args)
+    parser = PARSERS_FACTORY.create(parse_type, **parsed_args)
     parsed_objects = parser.parse()
-    response_data = [
-        {"obj_type": parse_type, "data": parser.to_data(obj)} for obj in parsed_objects
-    ]
     return create_response(
-        data=response_data, serializer_class=ParseContentRespSerializer, many=True
+        instance=parsed_objects, serializer=ParsedObjectSerializer, many=True
     )
+
+
+class ParsedObjectViewSet(viewsets.ModelViewSet):
+    queryset = ParsedObject.objects.all()
+    serializer_class = ParsedObjectSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = CreateParsedObjectSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        obj_type = serializer.validated_data["obj_type"]
+        parsed_object = create_parsed_object(obj_type, serializer.validated_data)
+        return create_response(
+            instance=parsed_object, serializer=ParsedObjectSerializer, many=False
+        )
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = CreateParsedObjectSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        update_parsed_object(obj=instance, data=serializer.validated_data)
+        return create_response(
+            instance=instance, serializer=ParsedObjectSerializer, many=False
+        )
