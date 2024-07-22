@@ -6,4 +6,4 @@ class LoadTestUser(HttpUser):
 
     @task
     def load_test_endpoint(self):
-        self.client.get('/api/parsed-objects')
+        self.client.get("/api/parsed-objects")
