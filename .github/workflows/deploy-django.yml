@@ -62,7 +62,7 @@ jobs:
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
-        kubectl get configmap env-config || kubectl create configmap env-config --from-file=prod.env
+        kubectl get configmap env-config || kubectl create configmap env-config --from-env-file=prod.env
         kubectl apply -f k8s/web-server-deployment.yaml
         kubectl apply -f k8s/loadBalancerService.yaml
         kubectl get pods
