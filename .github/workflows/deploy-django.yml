@@ -44,6 +44,7 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |-
+        cd web-server/
         docker build \
           --tag "$GAR_ZONE-docker.pkg.dev/$PROJECT_ID/$GAR_REPO/$IMAGE:$IMAGE_TAG" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
