@@ -14,9 +14,9 @@ spec:
     spec:
       containers:
       - name: django-container
-        image: hayko2508/web-server-image:latest
+        image: us-east1-docker.pkg.dev/winter-clone-429310-f7/web/web-server-image:latest
         ports:
         - containerPort: 8000
         envFrom:
           -  configMapRef:
-              name: prod
+              name: env-config
