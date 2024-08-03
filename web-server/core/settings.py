@@ -131,7 +131,9 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-SERVICE_ACCOUNT_KEY_PATH = Path.home() / "Downloads" / "winter-clone-429310-f7-8bff2a67c05b.json"
+SERVICE_ACCOUNT_KEY_PATH = (
+    Path.home() / "Downloads" / "winter-clone-429310-f7-8bff2a67c05b.json"
+)
 
 # Load the service account credentials
 credentials = service_account.Credentials.from_service_account_file(
