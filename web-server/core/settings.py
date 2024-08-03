@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
+from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -27,7 +27,6 @@ SECRET_KEY = "django-insecure-$ye$wmw8zdef%64k3co+bhfb#1y+_k2&c2nj))it=%5m^io$v5
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
@@ -41,6 +40,7 @@ INSTALLED_APPS = [
     "parsers",
     "rest_framework",
     "polymorphic",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -73,7 +73,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -87,7 +86,6 @@ DATABASES = {
         "PORT": os.getenv("DB_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -107,7 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -119,13 +116,28 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-STATIC_URL = "static/"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SERVICE_ACCOUNT_KEY_PATH = (
+    Path.home() / "Downloads" / "winter-clone-429310-f7-8bff2a67c05b.json"
+)
+
+# Load the service account credentials
+credentials = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_KEY_PATH
+)
+
+# Configure static files storage
+STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+GS_BUCKET_NAME = "my-web-django-bucket"  # Name of the bucket for static files
+GS_CREDENTIALS = credentials
+
+# Configure static files URL
+STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
