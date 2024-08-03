@@ -131,19 +131,12 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-SERVICE_ACCOUNT_KEY_PATH = (
-    Path.home() / "Downloads" / "winter-clone-429310-f7-8bff2a67c05b.json"
-)
 
-# Load the service account credentials
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_KEY_PATH
-)
 
 # Configure static files storage
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = "my-web-django-bucket"  # Name of the bucket for static files
-GS_CREDENTIALS = credentials
+
 
 # Configure static files URL
 STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
