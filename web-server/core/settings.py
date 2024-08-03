@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
+from google.oauth2 import service_account
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -129,3 +131,18 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+SERVICE_ACCOUNT_KEY_PATH = Path.home() / 'Downloads' / 'your-service-account-key.json'
+
+# Load the service account credentials
+credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_PATH)
+
+# Configure static files storage
+STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'YourStaticFilesBucket'  # Name of the bucket for static files
+GS_CREDENTIALS = credentials
+
+# Configure static files URL
+STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
+
+# Set STATIC_ROOT to a filesystem path (required by Django, but won't be used for storage)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
