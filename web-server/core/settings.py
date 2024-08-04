@@ -132,7 +132,8 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
+GS_QUERYSTRING_AUTH = False
+GS_DEFAULT_ACL = "publicRead"
 # Configure static files storage
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = "my-web-django-bucket"  # Name of the bucket for static files
