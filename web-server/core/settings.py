@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "parsers",
     "rest_framework",
     "polymorphic",
-    "storages"
+    "storages",
 ]
 
 MIDDLEWARE = [
