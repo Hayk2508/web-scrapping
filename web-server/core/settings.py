@@ -137,8 +137,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 GS_QUERYSTRING_AUTH = False
 GS_DEFAULT_ACL = "publicRead"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
 # Configure static files URL
-STATIC_URL = f"https://storage.googleapis.com/{os.getenv('GS_BUCKET_NAME')}/"
+STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
 
 # Set STATIC_ROOT to a filesystem path (required by Django, but won't be used for storage)
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
