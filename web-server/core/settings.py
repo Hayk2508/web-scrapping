@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
-from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -132,15 +131,12 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-GS_QUERYSTRING_AUTH = False
-GS_DEFAULT_ACL = "publicRead"
+
 # Configure static files storage
-STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-GS_BUCKET_NAME = "my-web-django-bucket"  # Name of the bucket for static files
 
 
 # Configure static files URL
-STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
+STATIC_URL = f"https://storage.googleapis.com/{os.getenv('GS_BUCKET_NAME')}/"
 
 # Set STATIC_ROOT to a filesystem path (required by Django, but won't be used for storage)
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
