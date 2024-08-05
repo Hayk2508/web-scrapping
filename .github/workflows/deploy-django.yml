@@ -58,7 +58,7 @@ jobs:
     - name: create env file
       run: |
         touch prod.env 
-        printf "DB_HOST=${{ secrets.DB_HOST }}\nDB_NAME=${{ secrets.DB_NAME }}\nDB_USER=${{ secrets.DB_USER }}\nDB_PASSWORD=${{ secrets.DB_PASSWORD }}\n" > prod.env
+        printf "DB_HOST=${{ secrets.DB_HOST }}\nDB_NAME=${{ secrets.DB_NAME }}\nDB_USER=${{ secrets.DB_USER }}\nDB_PASSWORD=${{ secrets.DB_PASSWORD }}\nGS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }}\n" > prod.env
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
