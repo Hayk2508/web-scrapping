@@ -9,4 +9,3 @@ gunicorn~=22.0.0
 gevent
 django-storages== 1.14.4
 google-cloud-storage== 2.18.0
-google-auth==2.32.0
