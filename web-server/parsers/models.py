@@ -39,6 +39,9 @@ class ImageParsedObject(ParsedObject):
     def to_data(self):
         return {"image_url": self.image_url}
 
+    def __str__(self):
+        return f"{self.image_url}, {self.id}"
+
 
 class VideoParsedObject(ParsedObject):
     video_url = models.URLField()
