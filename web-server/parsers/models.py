@@ -9,7 +9,7 @@ class Parser(TimeStamp, PolymorphicModel):
     url = models.URLField()
 
     def __str__(self):
-        return self.url
+        return f"{self.url}, {self.id}"
 
 
 class ImageParser(Parser):
@@ -40,7 +40,7 @@ class ImageParsedObject(ParsedObject):
         return {"image_url": self.image_url}
 
     def __str__(self):
-        return self.image_url
+        return f"{self.image_url}, {self.id}"
 
 
 class VideoParsedObject(ParsedObject):
@@ -53,4 +53,4 @@ class VideoParsedObject(ParsedObject):
         return {"video_url": self.video_url}
 
     def __str__(self):
-        return self.video_url
+        return f"{self.video_url}, {self.id}"
