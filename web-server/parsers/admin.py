@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from parsers.models import VideoParsedObject, ImageParsedObject
+
+admin.site.register(ImageParsedObject)
+admin.site.register(VideoParsedObject)
