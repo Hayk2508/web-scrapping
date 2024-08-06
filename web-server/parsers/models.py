@@ -8,6 +8,9 @@ from parsers.core.enums import Parsers
 class Parser(TimeStamp, PolymorphicModel):
     url = models.URLField()
 
+    def __str__(self):
+        return self.url
+
 
 class ImageParser(Parser):
     pass
@@ -36,6 +39,9 @@ class ImageParsedObject(ParsedObject):
     def to_data(self):
         return {"image_url": self.image_url}
 
+    def __str__(self):
+        return self.image_url
+
 
 class VideoParsedObject(ParsedObject):
     video_url = models.URLField()
@@ -45,3 +51,6 @@ class VideoParsedObject(ParsedObject):
 
     def to_data(self):
         return {"video_url": self.video_url}
+
+    def __str__(self):
+        return self.video_url
