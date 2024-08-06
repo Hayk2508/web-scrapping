@@ -1,6 +1,19 @@
 from django.contrib import admin
 
-from parsers.models import VideoParsedObject, ImageParsedObject
+from parsers.models import (
+    VideoParsedObject,
+    ImageParsedObject,
+    ImageParser,
+    VideoParser,
+)
 
-admin.site.register(ImageParsedObject)
-admin.site.register(VideoParsedObject)
+
+class BaseAdmin(admin.ModelAdmin):
+    list_display = ("id", "url")
+    search_fields = ("url",)
+
+
+admin.site.register(ImageParsedObject, BaseAdmin)
+admin.site.register(VideoParsedObject, BaseAdmin)
+admin.site.register(ImageParser, BaseAdmin)
+admin.site.register(VideoParser, BaseAdmin)
