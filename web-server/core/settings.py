@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "polymorphic",
     "storages",
+    "auth",
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,10 @@ STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
 
 # Set STATIC_ROOT to a filesystem path (required by Django, but won't be used for storage)
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
