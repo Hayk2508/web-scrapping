@@ -1,6 +1,5 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from rest_framework.permissions import IsAuthenticated
 
 from parsers.core import PARSERS_FACTORY
 
@@ -36,9 +35,6 @@ def parse_content(request):
 class ParsedObjectViewSet(viewsets.ModelViewSet):
     queryset = ParsedObject.objects.all()
     serializer_class = ParsedObjectSerializer
-    permission_classes = [
-        IsAuthenticated,
-    ]
 
     def create(self, request, *args, **kwargs):
         serializer = CreateParsedObjectSerializer(data=request.data)
