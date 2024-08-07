@@ -10,7 +10,6 @@ from parsers.core.parsed_objects_builders import (
     VideoParsedObjectBuilder,
 )
 
-
 router = DefaultRouter()
 router.register(r"parsed-objects", ParsedObjectViewSet)
 
@@ -19,4 +18,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/parsers/", include("parsers.urls")),
     path("api/", include(router.urls)),
+    path("api/", include("auth.urls")),
 ]
