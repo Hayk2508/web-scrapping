@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "polymorphic",
     "storages",
-    "auth",
+    "user_auth",
 ]
 
 MIDDLEWARE = [

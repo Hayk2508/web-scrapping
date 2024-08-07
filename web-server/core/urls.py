@@ -18,5 +18,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/parsers/", include("parsers.urls")),
     path("api/", include(router.urls)),
-    path("api/", include("auth.urls")),
+    path("api/", include("user_auth.urls")),
 ]
