@@ -1,0 +1,8 @@
+fastapi
+pydantic
+requests
+PyJWT
+typing_extensions
+gunicorn
+uvicorn
+cryptography
