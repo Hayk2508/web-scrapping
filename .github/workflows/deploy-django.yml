@@ -2,12 +2,15 @@ name: Build and Deploy to GKE
 
 on:
   workflow_dispatch:
+    inputs:
+      service:
+        description: 'Choose which service to deploy'
+        required: true
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: web-scraping-cluster    # cluster name
   GKE_ZONE: us-central1   # cluster zone
-  IMAGE: web-server-image # image name
   IMAGE_TAG: latest # image tag
   GAR_ZONE: us-east1 # artifact registry zone
   GAR_REPO: web # artifact registry repository
@@ -41,30 +44,62 @@ jobs:
         cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
 
+    # Set variables based on selected service
+    - name: Set service-specific variables
+      run: |-
+        if [ "${{ github.event.inputs.service }}" = "django" ]; then
+          echo "IMAGE=web-server-image" >> $GITHUB_ENV
+          echo "DEPLOYMENT_NAME=django-deployment" >> $GITHUB_ENV
+          echo "SERVICE_FILE=web-server-deployment.yaml" >> $GITHUB_ENV
+        elif [ "${{ github.event.inputs.service }}" = "auth" ]; then
+          echo "IMAGE=auth-server-image" >> $GITHUB_ENV
+          echo "DEPLOYMENT_NAME=auth-deployment" >> $GITHUB_ENV
+          echo "SERVICE_FILE=auth-service-deployment.yaml" >> $GITHUB_ENV
+        fi
+
     # Build the Docker image
     - name: Build
       run: |-
-        cd web-server/
+        if [ "${{ github.event.inputs.service }}" = "django" ]; then
+          cd web-server/
+        elif [ "${{ github.event.inputs.service }}" = "auth" ]; then
+          cd services/FAuth/
+        fi
         docker build \
           --tag "$GAR_ZONE-docker.pkg.dev/$PROJECT_ID/$GAR_REPO/$IMAGE:$IMAGE_TAG" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
+        
+
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
         docker push "$GAR_ZONE-docker.pkg.dev/$PROJECT_ID/$GAR_REPO/$IMAGE:$IMAGE_TAG"
 
-    - name: create env file
-      run: |
+    # Create or update the environment configuration
+    - name: Create env file
+      run: |-
         touch prod.env 
-        printf "DB_HOST=${{ secrets.DB_HOST }}\nDB_NAME=${{ secrets.DB_NAME }}\nDB_USER=${{ secrets.DB_USER }}\nDB_PASSWORD=${{ secrets.DB_PASSWORD }}\nGS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }}\n" > prod.env
+        if [ "${{ github.event.inputs.service }}" = "django" ]; then
+          printf "DB_HOST=${{ secrets.DB_HOST }}\nDB_NAME=${{ secrets.DB_NAME }}\nDB_USER=${{ secrets.DB_USER }}\nDB_PASSWORD=${{ secrets.DB_PASSWORD }}\nGS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }}\n" > prod.env
+        elif [ "${{ github.event.inputs.service }}" = "auth" ]; then
+          printf "ALGORITHM = "RS256"\nKMS_KEY_NAME="projects/$PROJECT_ID/locations/global/keyRings/kms-key-ring/cryptoKeys/kms-key/cryptoKeyVersions/1\n" > prod.env"
+        fi
+    # Create or update ConfigMap if deploying django
+    - name: Create or update ConfigMap
+      run: |-
+        if [ "${{ github.event.inputs.service }}" = "django" ]; then
+          kubectl get configmap env-config && kubectl delete configmap env-config
+          kubectl create configmap env-config --from-env-file=prod.env
+        elif [ "${{ github.event.inputs.service }}" = "auth" ]; then
+          kubectl get configmap env-setup && kubectl delete configmap env-setup
+          kubectl create configmap env-setup --from-env-file=prod.env 
+        fi
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
-        kubectl get configmap env-config && kubectl delete configmap env-config
-        kubectl create configmap env-config --from-env-file=prod.env
-        kubectl apply -f k8s/web-server-deployment.yaml
-        kubectl apply -f k8s/loadBalancerService.yaml
-        kubectl rollout restart deploy django-deployment
+        cd k8s/
+        kubectl apply -f $SERVICE_FILE
+        kubectl rollout restart deploy $DEPLOYMENT_NAME
         kubectl get pods
