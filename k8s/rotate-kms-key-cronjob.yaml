@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rotate-kms-key
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: gcloud-kms
+            image: google/cloud-sdk:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              gcloud config set project winter-clone-429310-f7 && \
+              gcloud kms keyrings create kms-key-ring --location global --quiet || true && \
+              TIMESTAMP=$(date +%Y%m%d%H%M%S) && \
+              EXISTING_KEY_NAME="kms-key" && \
+              gcloud kms keys versions list --location global --keyring kms-key-ring --key ${EXISTING_KEY_NAME} --quiet 2>/dev/null && \
+              gcloud kms keys versions destroy --location global --keyring kms-key-ring --key ${EXISTING_KEY_NAME} --quiet && \
+              gcloud kms keys delete ${EXISTING_KEY_NAME} --location global --keyring kms-key-ring --quiet || true && \
+              gcloud kms keys create ${EXISTING_KEY_NAME} \
+              --location global \
+              --keyring kms-key-ring \
+              --purpose asymmetric-encrypt-decrypt \
+              --default-algorithm rsa-decrypt-oaep-2048-sha256
+
+          restartPolicy: OnFailure
