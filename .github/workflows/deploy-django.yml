@@ -55,7 +55,7 @@ jobs:
           echo "DEPLOYMENT_NAME=django-deployment" >> $GITHUB_ENV
           echo "SERVICE_FILE=web-server-deployment.yaml" >> $GITHUB_ENV
         elif [ "${{ github.event.inputs.service }}" = "auth" ]; then
-          echo "IMAGE=auth-server-image" >> $GITHUB_ENV
+          echo "IMAGE=auth-service-image" >> $GITHUB_ENV
           echo "DEPLOYMENT_NAME=fastapi-deployment" >> $GITHUB_ENV
           echo "SERVICE_FILE=auth-service-deployment.yaml" >> $GITHUB_ENV
         fi
