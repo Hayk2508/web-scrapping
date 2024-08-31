@@ -19,11 +19,12 @@ ACCESS_TOKEN = "access"
 REFRESH_TOKEN = "refresh"
 ALGORITHM = os.getenv("ALGORITHM")
 
-client = kms_v1.KeyManagementServiceClient()
-name = client.crypto_key_path(
-    "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key"
-)
 KMS_KEY_NAME = os.getenv("KMS_KEY_NAME")
+client = kms_v1.KeyManagementServiceClient()
+
+name = client.crypto_key_version_path(
+    "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key", "1"
+)
 
 get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
 PUBLIC_KEY = client.get_public_key(request=get_public_key_request).pem
