@@ -25,7 +25,8 @@ name = client.crypto_key_path(
 )
 KMS_KEY_NAME = os.getenv("KMS_KEY_NAME")
 
-PUBLIC_KEY = client.get_public_key(name).pem
+get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
+PUBLIC_KEY = client.get_public_key(request=get_public_key_request).pem
 
 
 class Credential(BaseModel):
