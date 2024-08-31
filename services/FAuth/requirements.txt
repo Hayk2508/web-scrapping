@@ -6,3 +6,4 @@ typing_extensions
 gunicorn
 uvicorn
 cryptography
+google-cloud-kms
