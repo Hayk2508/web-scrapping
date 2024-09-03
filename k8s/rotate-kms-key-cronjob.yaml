@@ -12,20 +12,31 @@ spec:
           - name: gcloud-kms
             image: google/cloud-sdk:latest
             command:
-            - /bin/sh
-            - -c
-            - |
-              gcloud config set project winter-clone-429310-f7 && \
-              gcloud kms keyrings create kms-key-ring --location global --quiet || true && \
-              TIMESTAMP=$(date +%Y%m%d%H%M%S) && \
-              EXISTING_KEY_NAME="kms-key" && \
-              gcloud kms keys versions list --location global --keyring kms-key-ring --key ${EXISTING_KEY_NAME} --quiet 2>/dev/null && \
-              gcloud kms keys versions destroy --location global --keyring kms-key-ring --key ${EXISTING_KEY_NAME} --quiet && \
-              gcloud kms keys delete ${EXISTING_KEY_NAME} --location global --keyring kms-key-ring --quiet || true && \
-              gcloud kms keys create ${EXISTING_KEY_NAME} \
-              --location global \
-              --keyring kms-key-ring \
-              --purpose asymmetric-encrypt-decrypt \
-              --default-algorithm rsa-decrypt-oaep-2048-sha256
-
+              - /bin/sh
+              - -c
+              - |
+                set -e  
+                gcloud auth activate-service-account --key-file=/var/secrets/google/key.json
+                gcloud config set project winter-clone-429310-f7
+                
+                KEY_VERSIONS=$(gcloud kms keys versions list --location global --keyring kms-key-ring --key kms-key --format="value(name)")
+                for VERSION in $KEY_VERSIONS; do
+                  STATUS=$(gcloud kms keys versions describe $VERSION --location global --keyring kms-key-ring --key kms-key --format="value(state)")
+                  if [ "$STATUS" != "DESTROY_SCHEDULED" ]; then
+                    gcloud kms keys versions destroy $VERSION --location global --keyring kms-key-ring --key kms-key --quiet || true
+                  fi
+                done
+                
+                gcloud kms keys versions create \
+                --location global \
+                --keyring kms-key-ring \
+                --key kms-key
+            volumeMounts:
+              - name: gcp-key
+                mountPath: /var/secrets/google
+                readOnly: true
           restartPolicy: OnFailure
+          volumes:
+          - name: gcp-key
+            secret:
+              secretName: gcp-service-account-key
