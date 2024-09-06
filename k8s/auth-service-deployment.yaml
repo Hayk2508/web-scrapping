@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: django-application
+      app: fastapi-application
   template:
     metadata:
       labels:
-        app: django-application
+        app: fastapi-application
     spec:
       containers:
       - name: fastapi-container
@@ -20,3 +20,11 @@ spec:
         envFrom:
           - configMapRef:
               name: env-setup
+        volumeMounts:
+          - name: gcp-key
+            mountPath: /var/secrets/google
+            readOnly: true
+        volumes:
+          - name: gcp-key
+            secret:
+              secretName: gcp-service-account-key
