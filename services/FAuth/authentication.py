@@ -23,10 +23,12 @@ KMS_KEY_NAME = os.getenv("KMS_KEY_NAME")
 client = kms_v1.KeyManagementServiceClient()
 print("vat chi")
 name = client.crypto_key_version_path(
-    "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key", "1"
+    "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key", "3"
 )
 print("mdaa")
+print(name)
 get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
+
 PUBLIC_KEY = client.get_public_key(request=get_public_key_request).pem
 print("a")
 
