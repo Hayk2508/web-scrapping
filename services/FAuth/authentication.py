@@ -12,7 +12,7 @@ import requests
 
 app = FastAPI()
 
-
+print("Begin")
 ACCESS_TOKEN_EXPIRATION_TIME = timedelta(minutes=60)
 REFRESH_TOKEN_EXPIRATION_TIME = timedelta(days=7)
 ACCESS_TOKEN = "access"
@@ -21,11 +21,11 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 KMS_KEY_NAME = os.getenv("KMS_KEY_NAME")
 client = kms_v1.KeyManagementServiceClient()
-
+print("vat chi")
 name = client.crypto_key_version_path(
     "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key", "1"
 )
-
+print("mdaa")
 get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
 PUBLIC_KEY = client.get_public_key(request=get_public_key_request).pem
 
@@ -86,6 +86,7 @@ def login_for_tokens(credential: Credential):
             detail="Invalid credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     access_token = create_jwt(
         data=credential.dict(),
         expires_delta=ACCESS_TOKEN_EXPIRATION_TIME,
