@@ -11,7 +11,7 @@ from pydantic import BaseModel
 import requests
 
 app = FastAPI()
-
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/var/secrets/google/key.json'
 print("Begin")
 ACCESS_TOKEN_EXPIRATION_TIME = timedelta(minutes=60)
 REFRESH_TOKEN_EXPIRATION_TIME = timedelta(days=7)
