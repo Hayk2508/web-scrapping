@@ -30,6 +30,7 @@ get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
 PUBLIC_KEY = client.get_public_key(request=get_public_key_request).pem
 print("a")
 
+
 class Credential(BaseModel):
     username: str
     password: str
