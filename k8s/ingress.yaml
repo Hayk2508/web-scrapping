@@ -1,16 +1,23 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my-dep
+  name: ingress
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: fastapi-service
+            port:
+              number: 8080
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: my-dep
+            name: django-service
             port:
-              number: 8080  #
+              number: 8080
