@@ -11,8 +11,8 @@ from pydantic import BaseModel
 import requests
 
 app = FastAPI()
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/var/secrets/google/key.json'
-print("Begin")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/var/secrets/google/key.json"
+
 ACCESS_TOKEN_EXPIRATION_TIME = timedelta(minutes=60)
 REFRESH_TOKEN_EXPIRATION_TIME = timedelta(days=7)
 ACCESS_TOKEN = "access"
@@ -21,16 +21,12 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 KMS_KEY_NAME = os.getenv("KMS_KEY_NAME")
 client = kms_v1.KeyManagementServiceClient()
-print("vat chi")
 name = client.crypto_key_version_path(
     "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key", "3"
 )
-print("mdaa")
-print(name)
 get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
 
 PUBLIC_KEY = client.get_public_key(request=get_public_key_request).pem
-print("a")
 
 
 class Credential(BaseModel):
@@ -81,7 +77,7 @@ def create_jwt(
     return encoded_jwt
 
 
-@app.post("/api/token/")
+@app.post("/auth/api/token/")
 def login_for_tokens(credential: Credential):
     if not verify_credentials(credential.dict()):
         raise HTTPException(
@@ -104,7 +100,7 @@ def login_for_tokens(credential: Credential):
     return TokenInfo(access_token=access_token, refresh_token=refresh_token)
 
 
-@app.post("/api/token/refresh/")
+@app.post("/auth/api/token/refresh/")
 def refresh_token(ref_token: Annotated[str, Body(...)]):
     try:
         payload = jwt.decode(ref_token, PUBLIC_KEY, algorithms=[ALGORITHM])
@@ -137,6 +133,6 @@ def refresh_token(ref_token: Annotated[str, Body(...)]):
         )
 
 
-@app.get("/api/public_key")
+@app.get("/auth/api/public_key")
 def get_public_key():
     return {"public_key": PUBLIC_KEY}
