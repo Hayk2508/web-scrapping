@@ -50,7 +50,7 @@ def create_jwt(
 ) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
-    to_encode.update({"exp": expire, "token_type": token_type})
+    to_encode.update({"exp": expire.isoformat(), "token_type": token_type})
 
     header = {"alg": ALGORITHM, "typ": "JWT"}
     header_b64 = (
