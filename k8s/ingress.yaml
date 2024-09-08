@@ -4,6 +4,11 @@ metadata:
   name: ingress
 spec:
   ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: django-service
+      port:
+        number: 8080
   rules:
   - http:
       paths:
@@ -12,12 +17,5 @@ spec:
         backend:
           service:
             name: fastapi-service
-            port:
-              number: 8080
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: django-service
             port:
               number: 8080
