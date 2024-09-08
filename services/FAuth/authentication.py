@@ -22,7 +22,7 @@ ALGORITHM = os.getenv("ALGORITHM")
 KMS_KEY_NAME = os.getenv("KMS_KEY_NAME")
 client = kms_v1.KeyManagementServiceClient()
 name = client.crypto_key_version_path(
-    "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key", "3"
+    "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key", "4"
 )
 get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
 
