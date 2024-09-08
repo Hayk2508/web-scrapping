@@ -18,7 +18,6 @@ spec:
                 set -e  
                 gcloud auth activate-service-account --key-file=/var/secrets/google/key.json
                 gcloud config set project winter-clone-429310-f7
-                
                 KEY_VERSIONS=$(gcloud kms keys versions list --location global --keyring kms-key-ring --key kms-key --format="value(name)")
                 for VERSION in $KEY_VERSIONS; do
                   STATUS=$(gcloud kms keys versions describe $VERSION --location global --keyring kms-key-ring --key kms-key --format="value(state)")
