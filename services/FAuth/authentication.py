@@ -30,7 +30,7 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 
 def get_latest_key_version():
-    parent = f"projects/{PROJECT_ID}/locations/global/keyRings/{KMS_KEY_RING_NAME}/{KMS_KEY_NAME}"
+    parent = f"projects/{PROJECT_ID}/locations/global/keyRings/{KMS_KEY_RING_NAME}/cryptoKeys/{KMS_KEY_NAME}"
     versions = client.list_crypto_key_versions(parent=parent)
     max_version = max((int(v.name.split("/")[-1]) for v in versions), default=None)
     return str(max_version)
