@@ -13,16 +13,31 @@ import requests
 app = FastAPI()
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/var/secrets/google/key.json"
 
-ACCESS_TOKEN_EXPIRATION_TIME = timedelta(minutes=60)
-REFRESH_TOKEN_EXPIRATION_TIME = timedelta(days=7)
-ACCESS_TOKEN = "access"
-REFRESH_TOKEN = "refresh"
-ALGORITHM = os.getenv("ALGORITHM")
+client = kms_v1.KeyManagementServiceClient()
 
 KMS_KEY_NAME = os.getenv("KMS_KEY_NAME")
-client = kms_v1.KeyManagementServiceClient()
+KMS_KEY_RING_NAME = os.getenv("KMS_KEY_RING_NAME")
+
+PROJECT_ID = os.getenv("PROJECT_ID")
+
+ACCESS_TOKEN_EXPIRATION_TIME = timedelta(minutes=60)
+REFRESH_TOKEN_EXPIRATION_TIME = timedelta(days=7)
+
+ACCESS_TOKEN = "access"
+REFRESH_TOKEN = "refresh"
+
+ALGORITHM = os.getenv("ALGORITHM")
+
+
+def get_latest_key_version():
+    parent = f"projects/{PROJECT_ID}/locations/global/keyRings/{KMS_KEY_RING_NAME}/{KMS_KEY_NAME}"
+    versions = client.list_crypto_key_versions(parent=parent)
+    max_version = max((int(v.name.split("/")[-1]) for v in versions), default=None)
+    return str(max_version)
+
+
 name = client.crypto_key_version_path(
-    "winter-clone-429310-f7", "global", "kms-key-ring", "kms-key", "5"
+    PROJECT_ID, "global", KMS_KEY_RING_NAME, KMS_KEY_NAME, get_latest_key_version()
 )
 get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
 
@@ -65,7 +80,7 @@ def create_jwt(
     digest = hashlib.sha256(message.encode()).digest()
 
     sign_response = client.asymmetric_sign(
-        request={"name": KMS_KEY_NAME, "digest": {"sha256": digest}}
+        request={"name": name, "digest": {"sha256": digest}}
     )
 
     signature_b64 = (
