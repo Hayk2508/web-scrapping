@@ -18,18 +18,18 @@ spec:
                 set -e  
                 gcloud auth activate-service-account --key-file=/var/secrets/google/key.json
                 gcloud config set project winter-clone-429310-f7
-                KEY_VERSIONS=$(gcloud kms keys versions list --location global --keyring kms-key-ring --key kms-key-sign --format="value(name)")
+                KEY_VERSIONS=$(gcloud kms keys versions list --location global --keyring kms-key-ring --key key-sign --format="value(name)")
                 for VERSION in $KEY_VERSIONS; do
-                  STATUS=$(gcloud kms keys versions describe $VERSION --location global --keyring kms-key-ring --key kms-key-sign --format="value(state)")
+                  STATUS=$(gcloud kms keys versions describe $VERSION --location global --keyring kms-key-ring --key key-sign --format="value(state)")
                   if [ "$STATUS" != "DESTROY_SCHEDULED" ]; then
-                    gcloud kms keys versions destroy $VERSION --location global --keyring kms-key-ring --key kms-key-sign --quiet || true
+                    gcloud kms keys versions destroy $VERSION --location global --keyring kms-key-ring --key key-sign --quiet || true
                   fi
                 done
                 
                 gcloud kms keys versions create \
                 --location global \
                 --keyring kms-key-ring \
-                --key kms-key-sign
+                --key key-sign
             volumeMounts:
               - name: gcp-key
                 mountPath: /var/secrets/google
