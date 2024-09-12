@@ -74,7 +74,11 @@ def create_jwt(
     payload = data.copy()
     expire = datetime.now() + expires_delta
     payload.update(
-        {"iat": round(time.time()), "exp": expire.isoformat(), "token_type": token_type}
+        {
+            "iat": round(time.time()),
+            "exp": int(expire.timestamp()),
+            "token_type": token_type,
+        }
     )
 
     header = {"alg": ALGORITHM, "typ": "JWT"}
