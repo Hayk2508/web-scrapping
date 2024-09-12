@@ -2,13 +2,16 @@ import base64
 import hashlib
 import json
 import os
-from datetime import timedelta, datetime, timezone
+import time
+from datetime import timedelta, datetime
 from typing import Annotated
 from google.cloud import kms_v1
 import jwt
 from fastapi import FastAPI, HTTPException, status, Body
 from pydantic import BaseModel
 import requests
+from jwcrypto import jwk
+from enum import Enum
 
 app = FastAPI()
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/var/secrets/google/key.json"
@@ -19,14 +22,15 @@ KMS_KEY_NAME = os.getenv("KMS_KEY_NAME")
 KMS_KEY_RING_NAME = os.getenv("KMS_KEY_RING_NAME")
 
 PROJECT_ID = os.getenv("PROJECT_ID")
+ALGORITHM = os.getenv("ALGORITHM")
 
 ACCESS_TOKEN_EXPIRATION_TIME = timedelta(minutes=60)
 REFRESH_TOKEN_EXPIRATION_TIME = timedelta(days=7)
 
-ACCESS_TOKEN = "access"
-REFRESH_TOKEN = "refresh"
 
-ALGORITHM = os.getenv("ALGORITHM")
+class TOKEN(Enum):
+    ACCESS_TOKEN = "access"
+    REFRESH_TOKEN = "refresh"
 
 
 def get_latest_key_version():
@@ -39,9 +43,13 @@ def get_latest_key_version():
 name = client.crypto_key_version_path(
     PROJECT_ID, "global", KMS_KEY_RING_NAME, KMS_KEY_NAME, get_latest_key_version()
 )
-get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
 
-PUBLIC_KEY = client.get_public_key(request=get_public_key_request).pem
+
+def get_jwk():
+    get_public_key_request = kms_v1.GetPublicKeyRequest(name=name)
+    public_key = client.get_public_key(request=get_public_key_request).pem
+    jwk_obj = jwk.JWK.from_pem(public_key.encode("utf-8"))
+    return jwk_obj.export(as_dict=True)
 
 
 class Credential(BaseModel):
@@ -63,16 +71,18 @@ def verify_credentials(data: dict):
 def create_jwt(
     token_type: str, data: dict, expires_delta: timedelta | None = None
 ) -> str:
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + expires_delta
-    to_encode.update({"exp": expire.isoformat(), "token_type": token_type})
+    payload = data.copy()
+    expire = datetime.now() + expires_delta
+    payload.update(
+        {"iat": round(time.time()), "exp": expire.isoformat(), "token_type": token_type}
+    )
 
     header = {"alg": ALGORITHM, "typ": "JWT"}
     header_b64 = (
-        base64.urlsafe_b64encode(json.dumps(header).encode()).rstrip(b"=").decode()
+        base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
     )
     payload_b64 = (
-        base64.urlsafe_b64encode(json.dumps(to_encode).encode()).rstrip(b"=").decode()
+        base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
     )
 
     message = f"{header_b64}.{payload_b64}"
@@ -84,12 +94,10 @@ def create_jwt(
     )
 
     signature_b64 = (
-        base64.urlsafe_b64encode(sign_response.signature).rstrip(b"=").decode()
+        base64.urlsafe_b64encode(sign_response.signature).decode().rstrip("=")
     )
 
-    encoded_jwt = f"{message}.{signature_b64}"
-
-    return encoded_jwt
+    return f"{message}.{signature_b64}"
 
 
 @app.post("/auth/api/token/")
@@ -104,12 +112,12 @@ def login_for_tokens(credential: Credential):
     access_token = create_jwt(
         data=credential.dict(),
         expires_delta=ACCESS_TOKEN_EXPIRATION_TIME,
-        token_type=ACCESS_TOKEN,
+        token_type=TOKEN.ACCESS_TOKEN.value,
     )
     refresh_token = create_jwt(
         data=credential.dict(),
         expires_delta=REFRESH_TOKEN_EXPIRATION_TIME,
-        token_type=REFRESH_TOKEN,
+        token_type=TOKEN.REFRESH_TOKEN.value,
     )
 
     return TokenInfo(access_token=access_token, refresh_token=refresh_token)
@@ -118,16 +126,16 @@ def login_for_tokens(credential: Credential):
 @app.post("/auth/api/token/refresh/")
 def refresh_token(ref_token: Annotated[str, Body(...)]):
     try:
-        payload = jwt.decode(ref_token, PUBLIC_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(ref_token, get_jwk(), algorithms=[ALGORITHM])
         access_token = create_jwt(
             data=payload,
             expires_delta=ACCESS_TOKEN_EXPIRATION_TIME,
-            token_type=ACCESS_TOKEN,
+            token_type=TOKEN.ACCESS_TOKEN.value,
         )
         new_refresh_token = create_jwt(
             data=payload,
             expires_delta=REFRESH_TOKEN_EXPIRATION_TIME,
-            token_type=REFRESH_TOKEN,
+            token_type=TOKEN.REFRESH_TOKEN.value,
         )
         return TokenInfo(
             access_token=access_token,
@@ -150,4 +158,4 @@ def refresh_token(ref_token: Annotated[str, Body(...)]):
 
 @app.get("/auth/api/public_key")
 def get_public_key():
-    return {"public_key": PUBLIC_KEY}
+    return {"public_key": get_jwk()}
