@@ -87,7 +87,7 @@ jobs:
         if [ "${{ github.event.inputs.service }}" = "django" ]; then
           printf "DB_HOST=${{ secrets.DB_HOST }}\nDB_NAME=${{ secrets.DB_NAME }}\nDB_USER=${{ secrets.DB_USER }}\nDB_PASSWORD=${{ secrets.DB_PASSWORD }}\nGS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }}\n" > prod.env
         elif [ "${{ github.event.inputs.service }}" = "auth" ]; then
-          printf "ALGORITHM=\"RS256\"\nPROJECT_ID=$PROJECT_ID\nKMS_KEY_RING_NAME=kms-key-ring\nKMS_KEY_NAME=key-sign\n" > prod.env
+          printf "ALGORITHM=RS256\nPROJECT_ID=$PROJECT_ID\nKMS_KEY_RING_NAME=kms-key-ring\nKMS_KEY_NAME=key-sign\n" > prod.env
 
         fi
     # Create or update ConfigMap if deploying django
