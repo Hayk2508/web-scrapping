@@ -6,15 +6,18 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: fastapi-application
+       app: fastapi-application
+       #app: myapp
   template:
     metadata:
       labels:
-        app: fastapi-application
+         app: fastapi-application
+         #app: myapp
     spec:
       containers:
       - name: fastapi-container
         image: us-east1-docker.pkg.dev/winter-clone-429310-f7/web/auth-service-image:latest
+        #image: hayko2508/auth-image:latest
         ports:
         - containerPort: 8000
         envFrom:
