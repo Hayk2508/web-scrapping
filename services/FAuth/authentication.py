@@ -14,7 +14,7 @@ from jwcrypto import jwk
 from enum import Enum
 
 app = FastAPI()
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/FAuth/winter-clone-429310-f7-8bff2a67c05b.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/FAuth/winter-clone-429310-f7-8bff2a67c05b.json"
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/var/secrets/google/key.json"
 client = kms_v1.KeyManagementServiceClient()
 
@@ -42,8 +42,8 @@ def get_latest_key_version():
 
 latest_version = get_latest_key_version()
 name = client.crypto_key_version_path(
-        PROJECT_ID, "global", KMS_KEY_RING_NAME, KMS_KEY_NAME, latest_version
-    )
+    PROJECT_ID, "global", KMS_KEY_RING_NAME, KMS_KEY_NAME, latest_version
+)
 
 
 def get_jwk():
