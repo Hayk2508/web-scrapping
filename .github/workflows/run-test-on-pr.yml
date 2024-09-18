@@ -1,6 +1,11 @@
 name: Django CI
 
-on:  pull_request
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run-test-on-pr.yaml'
+      - 'web-server/**'
+
 
 jobs:
   test:
