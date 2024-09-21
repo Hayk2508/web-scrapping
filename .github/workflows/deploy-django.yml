@@ -11,7 +11,7 @@ on:
           - auth
 
 env:
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  PROJECT_ID: ${{ vars.GKE_PROJECT }}
   GKE_CLUSTER: web-scraping-cluster    # cluster name
   GKE_ZONE: us-central1   # cluster zone
   IMAGE_TAG: latest # image tag
