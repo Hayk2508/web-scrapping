@@ -65,7 +65,7 @@ class TokenInfo(BaseModel):
 
 
 def verify_credentials(data: dict):
-    response = requests.post(url="http://34.71.111.68/api/check/", json=data)
+    response = requests.post(url="http://104.154.80.137/api/check/", json=data)
     return response.status_code == 200
 
 
