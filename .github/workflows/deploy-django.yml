@@ -12,7 +12,7 @@ on:
 
 env:
   PROJECT_ID: ${{ vars.GKE_PROJECT }}
-  GKE_CLUSTER: web-scraping-cluster    # cluster name
+  GKE_CLUSTER: ${{ vars.GKE_CLUSTER_NAME }}    # cluster name
   GKE_ZONE: us-central1   # cluster zone
   IMAGE_TAG: latest # image tag
   GAR_ZONE: us-east1 # artifact registry zone
