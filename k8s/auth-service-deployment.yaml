@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: fastapi-application
+       #app: myapp
+  template:
+    metadata:
+      labels:
+         app: fastapi-application
+         #app: myapp
+    spec:
+      containers:
+      - name: fastapi-container
+        image: us-east1-docker.pkg.dev/phrasal-lantern-435910-c4/web/auth-service-image:latest
+        #image: hayko2508/auth-image:latest
+        ports:
+        - containerPort: 8000
+        envFrom:
+          - configMapRef:
+              name: env-setup
+        volumeMounts:
+          - name: gcp-key
+            mountPath: /var/secrets/google
+            readOnly: true
+      volumes:
+        - name: gcp-key
+          secret:
+            secretName: gcp-service-account-key

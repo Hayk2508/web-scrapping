@@ -1,6 +1,11 @@
 name: Lint
 
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/black-format.yml'
+      - 'web-server/**'
+      - 'services/FAuth/**'
 
 jobs:
   lint:
