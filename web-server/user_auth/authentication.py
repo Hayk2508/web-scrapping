@@ -34,7 +34,7 @@ class MyAuthentication(authentication.BaseAuthentication):
         auth_header = request.META.get("HTTP_AUTHORIZATION")
 
         if not auth_header or not auth_header.startswith("Bearer "):
-            raise AuthenticationFailed(code=status.HTTP_401_UNAUTHORIZED)
+            return None
 
         token = request.META["HTTP_AUTHORIZATION"].split("Bearer ")[1]
         public_key = cache.get("public_key")
