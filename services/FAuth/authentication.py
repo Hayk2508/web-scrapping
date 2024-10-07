@@ -14,7 +14,8 @@ from jwcrypto import jwk
 from enum import Enum
 
 app = FastAPI()
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/FAuth/winter-clone-429310-f7-8bff2a67c05b.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/User/Desktop/WebScrapping/services/FAuth/key.json"
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/var/secrets/google/key.json"
 client = kms_v1.KeyManagementServiceClient()
 
@@ -40,9 +41,8 @@ def get_latest_key_version():
     return str(max_version)
 
 
-latest_version = get_latest_key_version()
 name = client.crypto_key_version_path(
-    PROJECT_ID, "global", KMS_KEY_RING_NAME, KMS_KEY_NAME, latest_version
+    PROJECT_ID, "global", KMS_KEY_RING_NAME, KMS_KEY_NAME, get_latest_key_version()
 )
 
 
@@ -74,6 +74,7 @@ def create_jwt(
 ) -> str:
     payload = data.copy()
     expire = datetime.now() + expires_delta
+
     payload.update(
         {
             "iat": round(time.time()),
@@ -82,12 +83,14 @@ def create_jwt(
         }
     )
 
-    header = {"alg": ALGORITHM, "typ": "JWT"}
+    header = {"alg": ALGORITHM, "typ": "JWT", "kid": get_jwk()["kid"]}
     header_b64 = (
         base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
     )
     payload_b64 = (
-        base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
+        base64.urlsafe_b64encode(json.dumps(payload, default=str).encode())
+        .decode()
+        .rstrip("=")
     )
 
     message = f"{header_b64}.{payload_b64}"
@@ -114,11 +117,14 @@ def login_for_tokens(credential: Credential):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    credential.dict().pop("password")
+
     access_token = create_jwt(
         data=credential.dict(),
         expires_delta=ACCESS_TOKEN_EXPIRATION_TIME,
         token_type=TOKEN.ACCESS_TOKEN.value,
     )
+
     refresh_token = create_jwt(
         data=credential.dict(),
         expires_delta=REFRESH_TOKEN_EXPIRATION_TIME,
@@ -131,28 +137,35 @@ def login_for_tokens(credential: Credential):
 @app.post("/auth/api/token/refresh/")
 def refresh_token(ref_token: Annotated[str, Body(...)]):
     try:
-        payload = jwt.decode(ref_token, get_jwk(), algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            ref_token, algorithms=[ALGORITHM], options={"verify_signature": False}
+        )
+
         access_token = create_jwt(
             data=payload,
             expires_delta=ACCESS_TOKEN_EXPIRATION_TIME,
             token_type=TOKEN.ACCESS_TOKEN.value,
         )
+
         new_refresh_token = create_jwt(
             data=payload,
             expires_delta=REFRESH_TOKEN_EXPIRATION_TIME,
             token_type=TOKEN.REFRESH_TOKEN.value,
         )
+
         return TokenInfo(
             access_token=access_token,
             refresh_token=new_refresh_token,
             token_type="bearer",
         )
+
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Refresh token has expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -163,4 +176,9 @@ def refresh_token(ref_token: Annotated[str, Body(...)]):
 
 @app.get("/auth/api/public_key")
 def get_public_key():
+
     return {"public_key": get_jwk()}
+
+# For local test
+# if __name__ == "__main__":
+#     uvicorn.run(app=app, host="0.0.0.0", port=8001)
